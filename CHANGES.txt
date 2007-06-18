@@ -2,6 +2,13 @@
 Changes for lovely.buildouthttp
 ===============================
 
+After 0.1.0a1:
+==============
+
+- Fixed license header
+
+- Log connections on debug.
+
 2007/06/14 0.1.0a1:
 ===================
 

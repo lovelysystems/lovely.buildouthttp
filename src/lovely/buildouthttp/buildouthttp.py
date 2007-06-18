@@ -1,6 +1,6 @@
 ##############################################################################
 #
-# Copyright (c) 2006 Zope Corporation and Contributors.
+# Copyright (c) 2007 Lovely Systems and Contributors.
 # All Rights Reserved.
 #
 # This software is subject to the provisions of the Zope Public License,
@@ -11,6 +11,9 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
+"""
+$Id$
+"""
 
 import urllib2
 import os
@@ -18,6 +21,15 @@ import sys
 import csv
 import logging
 log = logging.getLogger('lovely.buildouthttp')
+
+class CredHandler(urllib2.HTTPBasicAuthHandler):
+
+    def http_error_401(self, req, fp, code, msg, headers):
+        log.debug('getting url: %r' % req.get_full_url())
+        res =  urllib2.HTTPBasicAuthHandler.http_error_401(self,req, fp, code,
+                                                           msg, headers)
+        log.debug('got url: %r %r' % (res.url, res.code))
+        return res
 
 def install(buildout=None):
     try:
@@ -28,9 +40,10 @@ def install(buildout=None):
         log.warn('Could not load authentication information: %s' % e)
         return
     reader = csv.reader(pwdsf)
-    auth_handler = urllib2.HTTPBasicAuthHandler()
+    auth_handler = CredHandler()
     for row in reader:
         realm, uris, user, password = row
+        log.debug('Added credentials %r, %r' % (realm, uris))
         auth_handler.add_password(realm, uris, user, password)
     opener = urllib2.build_opener(auth_handler)
     urllib2.install_opener(opener)
