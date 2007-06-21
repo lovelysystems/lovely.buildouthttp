@@ -2,8 +2,10 @@
 Changes for lovely.buildouthttp
 ===============================
 
-After 0.1.0a1:
-==============
+2007/06/21 0.1.0a2:
+===================
+
+- Log download failures
 
 - Fixed license header
 
