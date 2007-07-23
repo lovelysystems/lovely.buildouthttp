@@ -2,6 +2,11 @@
 Changes for lovely.buildouthttp
 ===============================
 
+2007/07/23 0.1.0a3:
+===================
+
+- added information to setup.py, moved to cheeseshop
+
 2007/06/21 0.1.0a2:
 ===================
 
