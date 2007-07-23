@@ -1,3 +1,4 @@
+import os
 from setuptools import setup, find_packages
 
 def read(*rnames):
@@ -23,6 +24,7 @@ setup(
     long_description = long_description,
     license = "ZPL 2.1",
     keywords = "buildout http authentication",
+    url='http://svn.zope.org/lovely.buildouthttp',
     packages = find_packages('src'),
     include_package_data = True,
     package_dir = {'':'src'},
