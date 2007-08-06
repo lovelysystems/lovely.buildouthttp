@@ -49,5 +49,9 @@ def install(buildout=None):
         realm, uris, user, password = row
         log.debug('Added credentials %r, %r' % (realm, uris))
         auth_handler.add_password(realm, uris, user, password)
-    opener = urllib2.build_opener(auth_handler)
-    urllib2.install_opener(opener)
+        handlers = []
+        if urllib2._opener is not None:
+            handlers[:] = urllib2._opener.handlers
+        handlers.insert(0, auth_handler)
+        opener = urllib2.build_opener(*handlers)
+        urllib2.install_opener(opener)
