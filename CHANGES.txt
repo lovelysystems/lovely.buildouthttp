@@ -2,6 +2,11 @@
 Changes for lovely.buildouthttp
 ===============================
 
+2007/12/08 0.2.1:
+=================
+- avoid an error when the realm is wrong or the file on bad realms and a few 
+  other controls. Thanks to Tarek Ziadé.
+
 2007/08/06 0.2.0a1:
 ===================
 

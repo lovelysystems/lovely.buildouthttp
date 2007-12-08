@@ -29,7 +29,9 @@ class CredHandler(urllib2.HTTPBasicAuthHandler):
         res =  urllib2.HTTPBasicAuthHandler.http_error_401(self,req, fp, code,
                                                            msg,
                                                            headers)
-        if res.code>=400:
+        if res is None:
+            log.error('failed to get url: %r, check your realm' % res.url)
+        elif res.code>=400:
             log.error('failed to get url: %r %r' % (res.url, res.code))
         else:
             log.debug('got url: %r %r' % (res.url, res.code))
@@ -46,7 +48,9 @@ def install(buildout=None):
     reader = csv.reader(pwdsf)
     auth_handler = CredHandler()
     for row in reader:
-        realm, uris, user, password = row
+        if len(row) != 4:
+            continue
+        realm, uris, user, password = (el.strip() for el in row)
         log.debug('Added credentials %r, %r' % (realm, uris))
         auth_handler.add_password(realm, uris, user, password)
         handlers = []
