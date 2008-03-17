@@ -26,16 +26,24 @@ class CredHandler(urllib2.HTTPBasicAuthHandler):
 
     def http_error_401(self, req, fp, code, msg, headers):
         log.debug('getting url: %r' % req.get_full_url())
-        res =  urllib2.HTTPBasicAuthHandler.http_error_401(self,req, fp, code,
+        try:
+            res =  urllib2.HTTPBasicAuthHandler.http_error_401(self,req, fp, code,
                                                            msg,
                                                            headers)
-        if res is None:
-            log.error('failed to get url: %r, check your realm' % res.url)
-        elif res.code>=400:
-            log.error('failed to get url: %r %r' % (res.url, res.code))
+        except urllib2.HTTPError, err:
+            log.error('failed to get url: %r %r' % (req.get_full_url(), err.code))
+            raise
+        except Exception, err:
+            log.error('failed to get url: %r %s' % (req.get_full_url(), str(err)))
+            raise
         else:
-            log.debug('got url: %r %r' % (res.url, res.code))
-        return res
+            if res is None:
+                log.error('failed to get url: %r, check your realm' % res.url)
+            elif res.code>=400:
+                log.error('failed to get url: %r %r' % (res.url, res.code))
+            else:
+                log.debug('got url: %r %r' % (res.url, res.code))
+            return res
 
 def install(buildout=None):
     try:
