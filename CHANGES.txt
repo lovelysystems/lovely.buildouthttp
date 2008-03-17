@@ -2,16 +2,21 @@
 Changes for lovely.buildouthttp
 ===============================
 
+2008/03/17 0.2.?:
+=================
+- added try/except around the retry section
+  protection against weird URLs
+
 2007/12/08 0.2.1:
 =================
-- avoid an error when the realm is wrong or the file on bad realms and a few 
+- avoid an error when the realm is wrong or the file on bad realms and a few
   other controls. Thanks to Tarek Ziadé.
 
 2007/08/06 0.2.0a1:
 ===================
 
 - don't overwrite handlers in case a handler already exists. (e.g. in paramiko)
-  thanks to Aaron Lehmann 
+  thanks to Aaron Lehmann
 
 2007/07/23 0.1.0a3:
 ===================
@@ -31,4 +36,3 @@ Changes for lovely.buildouthttp
 ===================
 
 - initial release
-
