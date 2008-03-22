@@ -27,4 +27,4 @@ Example com realm, http://www.example.com, username, secret
 Credits
 =======
 
-Thanks to Tarek Ziadé for bugfixes and extensions.
+Thanks to Tarek Ziade for bugfixes and extensions.
