@@ -22,3 +22,9 @@ information. Each row consists of realm, uri, username, password.
 
 file ~/.buildout/.httpauth:
 Example com realm, http://www.example.com, username, secret
+
+
+Credits
+=======
+
+Thanks to Tarek Ziadé for bugfixes and extensions.
