@@ -2,7 +2,7 @@
 Changes for lovely.buildouthttp
 ===============================
 
-2008/03/17 0.2.?:
+2008/03/22 0.2.2:
 =================
 - added try/except around the retry section
   protection against weird URLs
