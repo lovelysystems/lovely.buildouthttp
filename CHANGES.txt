@@ -2,6 +2,10 @@
 Changes for lovely.buildouthttp
 ===============================
 
+- fixed error when url can't be retrieved:
+  AttributeError: 'NoneType' object has no attribute 'url'
+  [naro]
+
 2008/03/22 0.2.2:
 =================
 - added try/except around the retry section

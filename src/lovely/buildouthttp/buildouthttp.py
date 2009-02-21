@@ -38,7 +38,7 @@ class CredHandler(urllib2.HTTPBasicAuthHandler):
             raise
         else:
             if res is None:
-                log.error('failed to get url: %r, check your realm' % res.url)
+                log.error('failed to get url: %r, check your realm' % req.get_full_url())
             elif res.code>=400:
                 log.error('failed to get url: %r %r' % (res.url, res.code))
             else:
