@@ -2,17 +2,25 @@
 Changes for lovely.buildouthttp
 ===============================
 
+
+2009/09/22 0.2.3:
+=================
+
+- added tests for the installer
+
 - fixed error when url can't be retrieved:
   AttributeError: 'NoneType' object has no attribute 'url'
   [naro]
 
 2008/03/22 0.2.2:
 =================
+
 - added try/except around the retry section
   protection against weird URLs
 
 2007/12/08 0.2.1:
 =================
+
 - avoid an error when the realm is wrong or the file on bad realms and a few
   other controls. Thanks to Tarek Ziade.
 
