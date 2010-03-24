@@ -23,6 +23,14 @@ information. Each row consists of realm, uri, username, password.
 file ~/.buildout/.httpauth:
 Example com realm, http://www.example.com, username, secret
 
+Github Private Downloads
+========================
+
+Private downloads on http://github.com/ are protected by a user token
+(see: http://github.com/blog/170-token-authentication). This extension
+allows to use such urls too. It uses the global git configuration for
+``github.user`` and ``github.token``. For setting up this config see
+http://github.com/blog/180-local-github-config.
 
 Credits
 =======

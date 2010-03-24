@@ -20,7 +20,51 @@ import os
 import sys
 import csv
 import logging
+import subprocess
+import urllib
+
 log = logging.getLogger('lovely.buildouthttp')
+
+def get_github_credentials():
+
+    """returns the credentials for the local git installation by using
+    git config"""
+
+    pipe = subprocess.Popen("git config github.token",
+                            shell=True,
+                            stdout=subprocess.PIPE).stdout
+    token = pipe.readline().strip()
+    pipe.close()
+    pipe = subprocess.Popen("git config github.user",
+                            shell=True,
+                            stdout=subprocess.PIPE).stdout
+    login = pipe.readline().strip()
+    pipe.close()
+    if login and token:
+        log.debug("Found github credentials for user %r", login)
+        return login, token
+
+
+class GithubHandler(urllib2.BaseHandler):
+
+    """This handler creates a post request with login and token, see
+    http://github.com/blog/170-token-authentication for details"""
+
+    def __init__(self, login, token):
+        self._login = login
+        self._token = token
+
+    def https_request(self, req):
+        if req.get_method() == 'GET' and req.get_host() == 'github.com':
+            log.debug("Found private github url %r", req.get_full_url())
+            data = urllib.urlencode(dict(login=self._login,
+                                         token=self._token))
+            timeout = getattr(req, 'timeout', 60)
+            if hasattr(req, 'timeout'):
+                timeout = req.timeout
+            req = urllib2.Request(req.get_full_url(), data)
+            req.timeout = timeout
+        return req
 
 class CredHandler(urllib2.HTTPBasicAuthHandler):
 
@@ -39,22 +83,22 @@ class CredHandler(urllib2.HTTPBasicAuthHandler):
     def http_error_401(self, req, fp, code, msg, headers):
         log.debug('getting url: %r' % req.get_full_url())
         try:
-            res =  urllib2.HTTPBasicAuthHandler.http_error_401(self,req, fp, code,
-                                                           msg,
-                                                           headers)
+            res =  urllib2.HTTPBasicAuthHandler.http_error_401(
+                self,req, fp, code, msg, headers)
         except urllib2.HTTPError, err:
-            log.error('failed to get url: %r %r' % (req.get_full_url(), err.code))
+            log.error('failed to get url: %r %r', req.get_full_url(), err.code)
             raise
         except Exception, err:
-            log.error('failed to get url: %r %s' % (req.get_full_url(), str(err)))
+            log.error('failed to get url: %r %s', req.get_full_url(), str(err))
             raise
         else:
             if res is None:
-                log.error('failed to get url: %r, check your realm' % req.get_full_url())
+                log.error('failed to get url: %r, check your realm',
+                          req.get_full_url())
             elif res.code>=400:
-                log.error('failed to get url: %r %r' % (res.url, res.code))
+                log.error('failed to get url: %r %r', res.url, res.code)
             else:
-                log.debug('got url: %r %r' % (res.url, res.code))
+                log.debug('got url: %r %r', res.url, res.code)
             return res
 
 def install(buildout=None, pwd_path=None):
@@ -86,6 +130,7 @@ def install(buildout=None, pwd_path=None):
     >>> f.close()
     >>> install(pwd_path=fp)
     """
+
     try:
         pwd_path = pwd_path or os.path.join(os.path.expanduser('~'),
                                   '.buildout',
@@ -94,8 +139,15 @@ def install(buildout=None, pwd_path=None):
     except IOError, e:
         log.warn('Could not load authentication information: %s' % e)
         return
+
     reader = csv.reader(pwdsf)
     auth_handler = CredHandler()
+    github_creds = get_github_credentials()
+    new_handlers = []
+    if github_creds:
+        new_handlers.append(GithubHandler(*github_creds))
+
+    use_auth_handler = False
     for l, row in enumerate(reader):
         if len(row) != 4:
             raise RuntimeError(
@@ -104,9 +156,14 @@ def install(buildout=None, pwd_path=None):
         realm, uris, user, password = (el.strip() for el in row)
         log.debug('Added credentials %r, %r' % (realm, uris))
         auth_handler.add_password(realm, uris, user, password)
-        handlers = []
+        use_auth_handler = True
+    if use_auth_handler:
+        new_handlers.append(auth_handler)
+    if new_handlers:
         if urllib2._opener is not None:
-            handlers[:] = urllib2._opener.handlers
-        handlers.insert(0, auth_handler)
+            handlers = urllib2._opener.handlers[:]
+            handlers[:0] = new_handlers
+        else:
+            handlers = new_handlers
         opener = urllib2.build_opener(*handlers)
         urllib2.install_opener(opener)
