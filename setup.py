@@ -16,11 +16,11 @@ long_description=(
 name='lovely.buildouthttp'
 setup(
     name = name,
-    version = "0.2.3",
+    version = "0.3.0a1",
     author = "Lovely Systems GmbH",
     author_email = "office@lovelysystems.com",
-    description = "Specialized zc.buildout plugin to add http basic" \
-                  "authentication support with a pwd file.",
+    description = "Specialized zc.buildout plugin to add http"
+                  " authentication support.",
     long_description = long_description,
     license = "ZPL 2.1",
     keywords = "buildout http authentication",

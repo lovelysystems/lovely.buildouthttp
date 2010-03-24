@@ -2,8 +2,8 @@
 Changes for lovely.buildouthttp
 ===============================
 
-trunk
-=====
+2010/03/24 0.3.0a1:
+===================
 
 - added github authentication, which now allows to download from
   private github repositories
