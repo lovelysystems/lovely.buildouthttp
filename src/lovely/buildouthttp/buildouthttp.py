@@ -22,6 +22,8 @@ import csv
 import logging
 import subprocess
 import urllib
+from zc.buildout import download
+import urlparse
 
 log = logging.getLogger('lovely.buildouthttp')
 
@@ -140,6 +142,7 @@ def install(buildout=None, pwd_path=None):
         log.warn('Could not load authentication information: %s' % e)
         return
 
+
     reader = csv.reader(pwdsf)
     auth_handler = CredHandler()
     github_creds = get_github_credentials()
@@ -147,18 +150,19 @@ def install(buildout=None, pwd_path=None):
     if github_creds:
         new_handlers.append(GithubHandler(*github_creds))
 
-    use_auth_handler = False
+    creds = []
     for l, row in enumerate(reader):
         if len(row) != 4:
             raise RuntimeError(
                 "Authentication file cannot be parsed %s:%s" % (
                     pwd_path, l+1))
         realm, uris, user, password = (el.strip() for el in row)
+        creds.append((realm, uris, user, password))
         log.debug('Added credentials %r, %r' % (realm, uris))
         auth_handler.add_password(realm, uris, user, password)
-        use_auth_handler = True
-    if use_auth_handler:
+    if creds:
         new_handlers.append(auth_handler)
+        download.url_opener = URLOpener(creds)
     if new_handlers:
         if urllib2._opener is not None:
             handlers = urllib2._opener.handlers[:]
@@ -167,3 +171,18 @@ def install(buildout=None, pwd_path=None):
             handlers = new_handlers
         opener = urllib2.build_opener(*handlers)
         urllib2.install_opener(opener)
+
+class URLOpener(download.URLOpener):
+
+    def __init__(self, creds):
+        self.creds = {}
+        for realm, uris, user, password in creds:
+            parts = urlparse.urlparse(uris)
+            self.creds[(parts.netloc, realm)] = (user, password)
+        download.URLOpener.__init__(self)
+
+    def prompt_user_passwd(self, host, realm):
+        creds = self.creds.get((host, realm))
+        if creds:
+            return creds
+        return download.URLOpener.prompt_user_passwd(self, host, realm)

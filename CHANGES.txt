@@ -2,6 +2,13 @@
 Changes for lovely.buildouthttp
 ===============================
 
+2010/05/27 0.3.0:
+=================
+
+- added support for zc.buildout.download, this allows various download
+  recipes to work with this credential extension. Requires at least
+  zc.buildout version 1.5.0b2
+
 2010/03/24 0.3.0a1:
 ===================
 

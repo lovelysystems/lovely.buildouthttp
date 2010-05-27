@@ -16,7 +16,7 @@ long_description=(
 name='lovely.buildouthttp'
 setup(
     name = name,
-    version = "0.3.0a1",
+    version = "0.3.0",
     author = "Lovely Systems GmbH",
     author_email = "office@lovelysystems.com",
     description = "Specialized zc.buildout plugin to add http"
@@ -29,7 +29,7 @@ setup(
     include_package_data = True,
     package_dir = {'':'src'},
     namespace_packages = ['lovely'],
-    install_requires = ['setuptools'],
+    install_requires = ['setuptools', 'zc.buildout'],
     extras_require = dict(
         test = ['zope.testing']
         ),
@@ -38,7 +38,7 @@ setup(
                     },
     zip_safe = False,
     classifiers = [
-       'Development Status :: 4 - Beta',
+       'Development Status :: 5 - Production/Stable',
        'Intended Audience :: Developers',
        'License :: OSI Approved :: Zope Public License',
        'Topic :: Software Development :: Build Tools',

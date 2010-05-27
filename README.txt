@@ -23,6 +23,10 @@ information. Each row consists of realm, uri, username, password.
 file ~/.buildout/.httpauth:
 Example com realm, http://www.example.com, username, secret
 
+Note that basic auth also works with any recipe using
+zc.buildout.download (e.g. hexagonit.recipe.download) because this
+extension also overwrites the url opener of zc.buildout.
+
 Github Private Downloads
 ========================
 
