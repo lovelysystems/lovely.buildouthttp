@@ -1,0 +1,62 @@
+===============================
+Changes for lovely.buildouthttp
+===============================
+
+2010/05/27 0.3.0:
+=================
+
+- added support for zc.buildout.download, this allows various download
+  recipes to work with this credential extension. Requires at least
+  zc.buildout version 1.5.0b2
+
+2010/03/24 0.3.0a1:
+===================
+
+- added github authentication, which now allows to download from
+  private github repositories
+
+2009/09/22 0.2.3:
+=================
+
+- added tests for the installer
+
+- fixed error when url can't be retrieved:
+  AttributeError: 'NoneType' object has no attribute 'url'
+  [naro]
+
+2008/03/22 0.2.2:
+=================
+
+- added try/except around the retry section
+  protection against weird URLs
+
+2007/12/08 0.2.1:
+=================
+
+- avoid an error when the realm is wrong or the file on bad realms and a few
+  other controls. Thanks to Tarek Ziade.
+
+2007/08/06 0.2.0a1:
+===================
+
+- don't overwrite handlers in case a handler already exists. (e.g. in paramiko)
+  thanks to Aaron Lehmann
+
+2007/07/23 0.1.0a3:
+===================
+
+- added information to setup.py, moved to cheeseshop
+
+2007/06/21 0.1.0a2:
+===================
+
+- Log download failures
+
+- Fixed license header
+
+- Log connections on debug.
+
+2007/06/14 0.1.0a1:
+===================
+
+- initial release
