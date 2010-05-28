@@ -178,8 +178,6 @@ class URLOpener(download.URLOpener):
         self.creds = {}
         for realm, uris, user, password in creds:
             parts = urlparse.urlparse(uris)
-            # keep 2.4 compatibility
-            #self.creds[(parts.netloc, realm)] = (user, password)
             self.creds[(parts[1], realm)] = (user, password)
         download.URLOpener.__init__(self)
 
