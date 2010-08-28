@@ -2,6 +2,11 @@
 Changes for lovely.buildouthttp
 ===============================
 
+2010/08/28 0.3.2:
+=================
+
+- silently ignore failing git credential lookups
+
 2010/05/28 0.3.1:
 =================
 
