@@ -2,6 +2,11 @@
 Changes for lovely.buildouthttp
 ===============================
 
+2010/08/28 0.3.3:
+=================
+
+- fixed typo on git command, introduced in 0.3.2
+
 2010/08/28 0.3.2:
 =================
 

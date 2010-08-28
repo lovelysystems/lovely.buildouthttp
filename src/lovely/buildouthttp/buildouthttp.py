@@ -32,7 +32,7 @@ def get_github_credentials():
     """returns the credentials for the local git installation by using
     git config"""
 
-    p = subprocess.Popen("gitx config github.token",
+    p = subprocess.Popen("git config github.token",
                          shell=True,
                          stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE)
