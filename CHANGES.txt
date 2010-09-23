@@ -2,6 +2,14 @@
 Changes for lovely.buildouthttp
 ===============================
 
+unreleased 0.3.4:
+=================
+
+- fixed behavour with python 2.6+. python 2.6 suddenly counts ``failed`` requests
+  but each request without auth counts as one, that makes buildout fail on
+  every 5th download in a single run.
+  I found this on windows, but should fail on linux too.
+
 2010/08/28 0.3.3:
 =================
 

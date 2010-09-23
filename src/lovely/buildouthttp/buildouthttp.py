@@ -87,6 +87,14 @@ class CredHandler(urllib2.HTTPBasicAuthHandler):
     """
 
     def http_error_401(self, req, fp, code, msg, headers):
+        try:
+            #python 2.6 introduces this attribute and fails the request on 5
+            #but since we're process global this fails on the 5th download
+            #there's no reset_retry_count(), so clear it here:
+            self.retried = 0
+        except AttributeError:
+            pass
+
         log.debug('getting url: %r' % req.get_full_url())
         try:
             res =  urllib2.HTTPBasicAuthHandler.http_error_401(
