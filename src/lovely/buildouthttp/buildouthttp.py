@@ -147,34 +147,37 @@ def install(buildout=None, pwd_path=None):
         return
 
 
-    reader = csv.reader(pwdsf)
-    auth_handler = CredHandler()
-    github_creds = get_github_credentials()
-    new_handlers = []
-    if github_creds:
-        new_handlers.append(GithubHandler(*github_creds))
+    try:
+        reader = csv.reader(pwdsf)
+        auth_handler = CredHandler()
+        github_creds = get_github_credentials()
+        new_handlers = []
+        if github_creds:
+            new_handlers.append(GithubHandler(*github_creds))
 
-    creds = []
-    for l, row in enumerate(reader):
-        if len(row) != 4:
-            raise RuntimeError(
-                "Authentication file cannot be parsed %s:%s" % (
-                    pwd_path, l+1))
-        realm, uris, user, password = (el.strip() for el in row)
-        creds.append((realm, uris, user, password))
-        log.debug('Added credentials %r, %r' % (realm, uris))
-        auth_handler.add_password(realm, uris, user, password)
-    if creds:
-        new_handlers.append(auth_handler)
-        download.url_opener = URLOpener(creds)
-    if new_handlers:
-        if urllib2._opener is not None:
-            handlers = urllib2._opener.handlers[:]
-            handlers[:0] = new_handlers
-        else:
-            handlers = new_handlers
-        opener = urllib2.build_opener(*handlers)
-        urllib2.install_opener(opener)
+        creds = []
+        for l, row in enumerate(reader):
+            if len(row) != 4:
+                raise RuntimeError(
+                    "Authentication file cannot be parsed %s:%s" % (
+                        pwd_path, l+1))
+            realm, uris, user, password = (el.strip() for el in row)
+            creds.append((realm, uris, user, password))
+            log.debug('Added credentials %r, %r' % (realm, uris))
+            auth_handler.add_password(realm, uris, user, password)
+        if creds:
+            new_handlers.append(auth_handler)
+            download.url_opener = URLOpener(creds)
+        if new_handlers:
+            if urllib2._opener is not None:
+                handlers = urllib2._opener.handlers[:]
+                handlers[:0] = new_handlers
+            else:
+                handlers = new_handlers
+            opener = urllib2.build_opener(*handlers)
+            urllib2.install_opener(opener)
+    finally:
+        pwdsf.close()
 
 class URLOpener(download.URLOpener):
 
