@@ -16,7 +16,7 @@ long_description=(
 name='lovely.buildouthttp'
 setup(
     name = name,
-    version = "0.3.3",
+    version = "0.3.4",
     author = "Lovely Systems GmbH",
     author_email = "office@lovelysystems.com",
     description = "Specialized zc.buildout plugin to add http"
