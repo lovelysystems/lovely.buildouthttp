@@ -1,0 +1,7 @@
+/.installed.cfg
+/bin/
+/develop-eggs/
+/parts/
+/src/lovely.buildouthttp.egg-info/
+*.pyc
+*.pyo
