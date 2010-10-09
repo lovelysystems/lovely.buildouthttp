@@ -2,6 +2,16 @@
 Changes for lovely.buildouthttp
 ===============================
 
+unreleased
+==========
+
+- the github download credentials are now also added for
+  zc.buildout.download based recipies. this allows to use github
+  private download urls with any download recipe, such as
+  hexagonit.recipe.download
+
+- moved to github http://github.com/lovelysystems/lovely.buildouthttp
+
 2010/09/28 0.3.4:
 =================
 

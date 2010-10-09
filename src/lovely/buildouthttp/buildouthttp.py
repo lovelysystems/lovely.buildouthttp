@@ -12,7 +12,7 @@
 #
 ##############################################################################
 """
-$Id$
+$Id: buildouthttp.py 116763 2010-09-23 12:16:01Z adamg $
 """
 
 import urllib2
@@ -144,7 +144,6 @@ def install(buildout=None, pwd_path=None):
     >>> f.close()
     >>> install(pwd_path=fp)
     """
-
     try:
         pwd_path = pwd_path or os.path.join(os.path.expanduser('~'),
                                   '.buildout',
@@ -175,7 +174,7 @@ def install(buildout=None, pwd_path=None):
             auth_handler.add_password(realm, uris, user, password)
         if creds:
             new_handlers.append(auth_handler)
-            download.url_opener = URLOpener(creds)
+            download.url_opener = URLOpener(creds, github_creds)
         if new_handlers:
             if urllib2._opener is not None:
                 handlers = urllib2._opener.handlers[:]
@@ -189,12 +188,27 @@ def install(buildout=None, pwd_path=None):
 
 class URLOpener(download.URLOpener):
 
-    def __init__(self, creds):
+    def __init__(self, creds, github_creds):
         self.creds = {}
+        self.github_creds = github_creds
         for realm, uris, user, password in creds:
             parts = urlparse.urlparse(uris)
             self.creds[(parts[1], realm)] = (user, password)
         download.URLOpener.__init__(self)
+
+    def retrieve(self, url, filename=None, reporthook=None, data=None):
+        if self.github_creds and not data:
+            scheme, netloc, path, params, query, fragment =  urlparse.urlparse(url)
+            if scheme == 'https' and netloc == 'github.com':
+                log.debug("Appendin github credentials to url %r", url)
+                login, token = self.github_creds
+                data = urllib.urlencode(dict(login=login,
+                                             token=token))
+                query += '&%s' % data
+            url = urlparse.urlunparse((scheme, netloc, path, params,
+                                       query, fragment))
+        return download.URLOpener.retrieve(self, url, filename,
+                                           reporthook, data)
 
     def prompt_user_passwd(self, host, realm):
         creds = self.creds.get((host, realm))
