@@ -19,12 +19,12 @@ setup(
     version = "0.3.4",
     author = "Lovely Systems GmbH",
     author_email = "office@lovelysystems.com",
-    description = "Specialized zc.buildout plugin to add http"
-                  " authentication support.",
+    description = "Buildout extension to add http authentication "
+                  "for find-links and download recipies",
     long_description = long_description,
     license = "ZPL 2.1",
-    keywords = "buildout http authentication",
-    url='http://svn.zope.org/lovely.buildouthttp',
+    keywords = "buildout http authentication github",
+    url='http://github.com/lovelysystems/lovely.buildouthttp',
     packages = find_packages('src'),
     include_package_data = True,
     package_dir = {'':'src'},

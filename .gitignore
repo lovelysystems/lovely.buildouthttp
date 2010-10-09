@@ -2,6 +2,7 @@
 /bin/
 /develop-eggs/
 /parts/
+/dist/
 /src/lovely.buildouthttp.egg-info/
 *.pyc
 *.pyo
