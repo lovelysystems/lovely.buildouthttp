@@ -1,0 +1,2 @@
+recursive-include src *.conf *.html *.jpg *.png *.txt
+include *.txt
