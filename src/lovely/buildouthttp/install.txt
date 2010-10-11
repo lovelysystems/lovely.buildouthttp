@@ -1,0 +1,44 @@
+====================
+Handler Installation
+====================
+
+By default the install function looks for the password file at
+~/.buildout/.httpauth and installs a basic auth opener.
+
+It does not fail if the file cannot be found.
+
+    >>> import os
+    >>> from lovely.buildouthttp.buildouthttp import install
+    >>> install()
+
+We can supply the path to the file for testing.
+
+    >>> install(pwd_path='a')
+
+If the file cannot be parsed an exception is raised.
+
+    >>> fp = os.path.join(tmp,'pwd.txt')
+    >>> import os
+    >>> f = file(fp, 'w')
+    >>> f.write('The realm,https://example.com/ something')
+    >>> f.close()
+    >>> install(pwd_path=fp)
+    Traceback (most recent call last):
+    ...
+    RuntimeError: Authentication file cannot be parsed ...pwd.txt:1
+
+Some working examples.
+
+    >>> f = file(fp, 'w')
+    >>> f.write('The realm,https://example.com/,username,password')
+    >>> f.close()
+    >>> install(pwd_path=fp)
+    >>> f = file(fp, 'w')
+    >>> f.write('The realm,https://example.com/,username,password\n')
+    >>> f.close()
+    >>> install(pwd_path=fp)
+    >>> f = file(fp, 'w')
+    >>> f.write('')
+    >>> f.close()
+    >>> install(pwd_path=fp)
+

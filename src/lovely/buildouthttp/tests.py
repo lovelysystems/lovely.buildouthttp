@@ -1,5 +1,5 @@
 import doctest, unittest
-from zope.testing.doctest import DocTestSuite
+from zope.testing.doctest import DocFileSuite, DocTestSuite
 import tempfile
 import shutil
 
@@ -12,6 +12,10 @@ def tearDown(test):
 
 def test_suite():
     uSuites = (
+        DocFileSuite('install.txt',
+                     setUp=setUp, tearDown=tearDown,
+                     optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS,
+                     ),
         DocTestSuite('lovely.buildouthttp.buildouthttp',
                      setUp=setUp, tearDown=tearDown,
                      optionflags=doctest.NORMALIZE_WHITESPACE|doctest.ELLIPSIS,

@@ -116,34 +116,9 @@ class CredHandler(urllib2.HTTPBasicAuthHandler):
             return res
 
 def install(buildout=None, pwd_path=None):
-    """
-    By default the install function looks for the password file at
-    ~/.buildout/.httpauth and installs a basic auth opener.
-
-    It does not fail if the file cannot be found.
-    >>> install()
-
-    We can supply the path to the file for testing.
-
-    >>> install(pwd_path='a')
-
-    If the file cannot be parsed an exception is raised.
-
-    >>> fp = os.path.join(tmp,'pwd.txt')
-    >>> import os
-    >>> f = file(fp, 'w')
-    >>> f.write('The realm,https://example.com/ something')
-    >>> f.close()
-    >>> install(pwd_path=fp)
-    Traceback (most recent call last):
-    ...
-    RuntimeError: Authentication file cannot be parsed ...pwd.txt:1
-
-    >>> f = file(fp, 'w')
-    >>> f.write('The realm,https://example.com/,username,password')
-    >>> f.close()
-    >>> install(pwd_path=fp)
-    """
+    pwdsf = None
+    github_creds = None
+    creds = []
     try:
         pwd_path = pwd_path or os.path.join(os.path.expanduser('~'),
                                   '.buildout',
@@ -151,29 +126,25 @@ def install(buildout=None, pwd_path=None):
         pwdsf = file(pwd_path)
     except IOError, e:
         log.warn('Could not load authentication information: %s' % e)
-        return
-
-
     try:
-        reader = csv.reader(pwdsf)
         auth_handler = CredHandler()
         github_creds = get_github_credentials()
         new_handlers = []
         if github_creds:
             new_handlers.append(GithubHandler(*github_creds))
-
-        creds = []
-        for l, row in enumerate(reader):
-            if len(row) != 4:
-                raise RuntimeError(
-                    "Authentication file cannot be parsed %s:%s" % (
-                        pwd_path, l+1))
-            realm, uris, user, password = (el.strip() for el in row)
-            creds.append((realm, uris, user, password))
-            log.debug('Added credentials %r, %r' % (realm, uris))
-            auth_handler.add_password(realm, uris, user, password)
+        if pwdsf:
+            for l, row in enumerate(csv.reader(pwdsf)):
+                if len(row) != 4:
+                    raise RuntimeError(
+                        "Authentication file cannot be parsed %s:%s" % (
+                            pwd_path, l+1))
+                realm, uris, user, password = (el.strip() for el in row)
+                creds.append((realm, uris, user, password))
+                log.debug('Added credentials %r, %r' % (realm, uris))
+                auth_handler.add_password(realm, uris, user, password)
         if creds:
             new_handlers.append(auth_handler)
+        if creds or github_creds:
             download.url_opener = URLOpener(creds, github_creds)
         if new_handlers:
             if urllib2._opener is not None:
@@ -184,7 +155,8 @@ def install(buildout=None, pwd_path=None):
             opener = urllib2.build_opener(*handlers)
             urllib2.install_opener(opener)
     finally:
-        pwdsf.close()
+        if pwdsf:
+            pwdsf.close()
 
 class URLOpener(download.URLOpener):
 
@@ -200,7 +172,7 @@ class URLOpener(download.URLOpener):
         if self.github_creds and not data:
             scheme, netloc, path, params, query, fragment =  urlparse.urlparse(url)
             if scheme == 'https' and netloc == 'github.com':
-                log.debug("Appendin github credentials to url %r", url)
+                log.debug("Appending github credentials to url %r", url)
                 login, token = self.github_creds
                 data = urllib.urlencode(dict(login=login,
                                              token=token))
