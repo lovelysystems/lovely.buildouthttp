@@ -2,6 +2,11 @@
 Changes for lovely.buildouthttp
 ===============================
 
+2010/10/11 0.3.6:
+=================
+
+- added missing CHANGES.txt file, this fixes the installation
+
 2010/10/09 0.3.5:
 =================
 
