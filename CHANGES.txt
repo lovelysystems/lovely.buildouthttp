@@ -2,8 +2,8 @@
 Changes for lovely.buildouthttp
 ===============================
 
-unreleased
-==========
+2010/10/11 0.3.7:
+=================
 
 - bugfix: make git credentials work without any basic http auth
   definitions
