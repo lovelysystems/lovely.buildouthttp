@@ -121,6 +121,7 @@ class CredHandler(urllib2.HTTPBasicAuthHandler):
 
 def install(buildout=None, pwd_path=None):
     pwdsf = StringIO()
+    combined_creds = []
     github_creds = None
     creds = []
     local_pwd_path = os.path.join(os.getcwd(), '.httpauth')
@@ -129,15 +130,17 @@ def install(buildout=None, pwd_path=None):
         '.buildout',
         '.httpauth')
 
-    def combine_cred_file(file_path):
-        if file_path is not None and os.path.exists(file_path):
-            cred_file = open(file_path)
-            pwdsf.write(cred_file.read())
-            cred_file.close()
+    def combine_cred_file(file_path, combined_creds):
+        if file_path is None or not os.path.exists(file_path):
+            return
+        cred_file = file(file_path)
+        combined_creds += map(str.strip, cred_file.readlines())
+        cred_file.close()
     # combine all the possible .httpauth files together
-    combine_cred_file(pwd_path)
-    combine_cred_file(local_pwd_path)
-    combine_cred_file(system_pwd_path)
+    combine_cred_file(pwd_path, combined_creds)
+    combine_cred_file(local_pwd_path, combined_creds)
+    combine_cred_file(system_pwd_path, combined_creds)
+    pwdsf.write("\n".join(combined_creds))
     pwdsf.seek(0)
     if not pwdsf.len:
         pwdsf = None
