@@ -17,10 +17,12 @@ File buildout.cfg:
 find-links=http://www.example.com/dist
 extensions=lovely.buildouthttp
 
-Create the password file, this file contains all authentication
-information. Each row consists of realm, uri, username, password.
+Create the ``.httpauth`` password file, this file contains all authentication
+information. This file can be placed in the root of the current buildout or in
+the ``~/.buildout`` directory. Each row consists of ``realm, uri, username,
+password``.
 
-file ~/.buildout/.httpauth:
+Here is an example of a ``~/.buildout/.httpauth`` file.
 Example com realm, http://www.example.com, username, secret
 
 Note that basic auth also works with any recipe using

@@ -22,6 +22,7 @@ import csv
 import logging
 import subprocess
 import urllib
+from StringIO import StringIO
 from zc.buildout import download
 import urlparse
 
@@ -116,16 +117,27 @@ class CredHandler(urllib2.HTTPBasicAuthHandler):
             return res
 
 def install(buildout=None, pwd_path=None):
-    pwdsf = None
+    pwdsf = StringIO()
     github_creds = None
     creds = []
-    try:
-        pwd_path = pwd_path or os.path.join(os.path.expanduser('~'),
-                                  '.buildout',
-                                  '.httpauth')
-        pwdsf = file(pwd_path)
-    except IOError, e:
-        log.warn('Could not load authentication information: %s' % e)
+    local_pwd_path = os.path.join(os.getcwd(), '.httpauth')
+    system_pwd_path = os.path.join(
+        os.path.expanduser('~'),
+        '.buildout',
+        '.httpauth')
+    def combine_cred_file(file_path):
+        if file_path is not None and os.path.exists(file_path):
+            cred_file = open(file_path)
+            pwdsf.write(cred_file.read())
+            cred_file.close()
+    # combine all the possible .httpauth files together
+    combine_cred_file(pwd_path)
+    combine_cred_file(local_pwd_path)
+    combine_cred_file(system_pwd_path)
+    pwdsf.seek(0)
+    if not pwdsf.len:
+        pwdsf = None
+        log.warn('Could not load authentication information')
     try:
         auth_handler = CredHandler()
         github_creds = get_github_credentials()

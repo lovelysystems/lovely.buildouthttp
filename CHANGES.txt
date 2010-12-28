@@ -2,6 +2,12 @@
 Changes for lovely.buildouthttp
 ===============================
 
+XXXX/XX/XX 0.3.8:
+=================
+
+- Allow the inclusion of the .httpauth file from within the buildout itself.
+  This adds to the realms set in ``~/.buildout/.httpauth``
+
 2010/10/11 0.3.7:
 =================
 
