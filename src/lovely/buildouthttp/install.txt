@@ -42,3 +42,28 @@ Some working examples.
     >>> f.close()
     >>> install(pwd_path=fp)
 
+Now let's try with the ``.httpauth`` file in the buildout directory.
+
+    >>> buildout_dir = os.path.join(tmp, 'test-buildout')
+    >>> os.mkdir(buildout_dir)
+    >>> buildout = {'buildout': {'directory': buildout_dir}}
+    >>> install(buildout=buildout)
+    >>> buildout_fp = os.path.join(buildout_dir, '.httpauth')
+    >>> f = file(buildout_fp, 'w')
+    >>> f.write('The realm,https://example.com/ not valid')
+    >>> f.close()
+    >>> install(buildout=buildout)
+    Traceback (most recent call last):
+    ...
+    RuntimeError: Authentication file cannot be parsed ...None:1
+    >>> f = file(buildout_fp, 'w')
+    >>> f.write('The realm,https://example.com/,username,password')
+    >>> f.close()
+    >>> install(buildout=buildout)
+
+Then with the file passed in and the file from the buildout directory.
+
+    >>> f = file(fp, 'w')
+    >>> f.write('The realm,https://example.com/,username,password')
+    >>> f.close()
+    >>> install(buildout=buildout, pwd_path=fp)
