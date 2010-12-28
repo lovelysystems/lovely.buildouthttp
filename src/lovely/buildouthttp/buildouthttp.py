@@ -124,7 +124,11 @@ def install(buildout=None, pwd_path=None):
     combined_creds = []
     github_creds = None
     creds = []
-    local_pwd_path = os.path.join(os.getcwd(), '.httpauth')
+    local_pwd_path = ''
+    if buildout is not None:
+        local_pwd_path = os.path.join(
+            buildout['buildout']['directory'],
+            '.httpauth')
     system_pwd_path = os.path.join(
         os.path.expanduser('~'),
         '.buildout',
