@@ -28,6 +28,7 @@ import urlparse
 
 log = logging.getLogger('lovely.buildouthttp')
 
+
 def get_github_credentials():
 
     """returns the credentials for the local git installation by using
@@ -73,6 +74,7 @@ class GithubHandler(urllib2.BaseHandler):
             req.timeout = timeout
         return req
 
+
 class CredHandler(urllib2.HTTPBasicAuthHandler):
 
     """This handler adds basic auth credentials to the request upon a 401
@@ -98,8 +100,8 @@ class CredHandler(urllib2.HTTPBasicAuthHandler):
 
         log.debug('getting url: %r' % req.get_full_url())
         try:
-            res =  urllib2.HTTPBasicAuthHandler.http_error_401(
-                self,req, fp, code, msg, headers)
+            res = urllib2.HTTPBasicAuthHandler.http_error_401(
+                self, req, fp, code, msg, headers)
         except urllib2.HTTPError, err:
             log.error('failed to get url: %r %r', req.get_full_url(), err.code)
             raise
@@ -110,11 +112,12 @@ class CredHandler(urllib2.HTTPBasicAuthHandler):
             if res is None:
                 log.error('failed to get url: %r, check your realm',
                           req.get_full_url())
-            elif res.code>=400:
+            elif res.code >= 400:
                 log.error('failed to get url: %r %r', res.url, res.code)
             else:
                 log.debug('got url: %r %r', res.url, res.code)
             return res
+
 
 def install(buildout=None, pwd_path=None):
     pwdsf = StringIO()
@@ -125,6 +128,7 @@ def install(buildout=None, pwd_path=None):
         os.path.expanduser('~'),
         '.buildout',
         '.httpauth')
+
     def combine_cred_file(file_path):
         if file_path is not None and os.path.exists(file_path):
             cred_file = open(file_path)
@@ -149,7 +153,7 @@ def install(buildout=None, pwd_path=None):
                 if len(row) != 4:
                     raise RuntimeError(
                         "Authentication file cannot be parsed %s:%s" % (
-                            pwd_path, l+1))
+                            pwd_path, l + 1))
                 realm, uris, user, password = (el.strip() for el in row)
                 creds.append((realm, uris, user, password))
                 log.debug('Added credentials %r, %r' % (realm, uris))
@@ -170,6 +174,7 @@ def install(buildout=None, pwd_path=None):
         if pwdsf:
             pwdsf.close()
 
+
 class URLOpener(download.URLOpener):
 
     def __init__(self, creds, github_creds):
@@ -182,7 +187,8 @@ class URLOpener(download.URLOpener):
 
     def retrieve(self, url, filename=None, reporthook=None, data=None):
         if self.github_creds and not data:
-            scheme, netloc, path, params, query, fragment =  urlparse.urlparse(url)
+            scheme, netloc, path, params, query, fragment = urlparse.urlparse(
+                url)
             if scheme == 'https' and netloc == 'github.com':
                 log.debug("Appending github credentials to url %r", url)
                 login, token = self.github_creds
