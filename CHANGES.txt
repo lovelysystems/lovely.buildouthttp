@@ -2,7 +2,7 @@
 Changes for lovely.buildouthttp
 ===============================
 
-XXXX/XX/XX 0.3.8:
+2010/12/29 0.4.0:
 =================
 
 - Allow the inclusion of the .httpauth file from within the buildout itself.
