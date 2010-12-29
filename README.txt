@@ -1,8 +1,9 @@
+=========================
 HTTP plugins for buildout
 =========================
 
 HTTP Basic-Authentication
--------------------------
+=========================
 
 With this extension it is possible to define password protected
 package directories without specifying the password and user in the
@@ -31,7 +32,7 @@ zc.buildout.download (e.g. hexagonit.recipe.download) because this
 extension also overwrites the url opener of zc.buildout.
 
 Github Private Downloads
-------------------------
+=========================
 
 Private downloads on http://github.com/ are protected by a user token
 (see: http://github.com/blog/170-token-authentication). This extension

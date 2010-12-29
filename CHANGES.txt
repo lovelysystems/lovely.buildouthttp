@@ -1,25 +1,26 @@
+===============================
 Changes for lovely.buildouthttp
 ===============================
 
-XXXX/XX/XX 0.3.8
-----------------
+XXXX/XX/XX 0.3.8:
+=================
 
 - Allow the inclusion of the .httpauth file from within the buildout itself.
   This adds to the realms set in ``~/.buildout/.httpauth``
 
-2010/10/11 0.3.7
-----------------
+2010/10/11 0.3.7:
+=================
 
 - bugfix: make git credentials work without any basic http auth
   definitions
 
-2010/10/11 0.3.6
-----------------
+2010/10/11 0.3.6:
+=================
 
 - added missing CHANGES.txt file, this fixes the installation
 
-2010/10/09 0.3.5
-----------------
+2010/10/09 0.3.5:
+=================
 
 - the github download credentials are now also added for
   zc.buildout.download based recipies. this allows to use github
@@ -28,44 +29,44 @@ XXXX/XX/XX 0.3.8
 
 - moved to github http://github.com/lovelysystems/lovely.buildouthttp
 
-2010/09/28 0.3.4
-----------------
+2010/09/28 0.3.4:
+=================
 
 - fixed behavour with python 2.6+. python 2.6 suddenly counts ``failed`` requests
   but each request without auth counts as one, that makes buildout fail on
   every 5th download in a single run.
   I found this on windows, but should fail on linux too.
 
-2010/08/28 0.3.3
-----------------
+2010/08/28 0.3.3:
+=================
 
 - fixed typo on git command, introduced in 0.3.2
 
-2010/08/28 0.3.2
-----------------
+2010/08/28 0.3.2:
+=================
 
 - silently ignore failing git credential lookups
 
-2010/05/28 0.3.1
-----------------
+2010/05/28 0.3.1:
+=================
 
 - python2.4 comptibility fix (thanks to Godefroid Chapelle)
 
-2010/05/27 0.3.0
-----------------
+2010/05/27 0.3.0:
+=================
 
 - added support for zc.buildout.download, this allows various download
   recipes to work with this credential extension. Requires at least
   zc.buildout version 1.5.0b2
 
-2010/03/24 0.3.0a1
-------------------
+2010/03/24 0.3.0a1:
+===================
 
 - added github authentication, which now allows to download from
   private github repositories
 
-2009/09/22 0.2.3
-----------------
+2009/09/22 0.2.3:
+=================
 
 - added tests for the installer
 
@@ -73,31 +74,31 @@ XXXX/XX/XX 0.3.8
   AttributeError: 'NoneType' object has no attribute 'url'
   [naro]
 
-2008/03/22 0.2.2
-----------------
+2008/03/22 0.2.2:
+=================
 
 - added try/except around the retry section
   protection against weird URLs
 
-2007/12/08 0.2.1
-----------------
+2007/12/08 0.2.1:
+=================
 
 - avoid an error when the realm is wrong or the file on bad realms and a few
   other controls. Thanks to Tarek Ziade.
 
-2007/08/06 0.2.0a1
-------------------
+2007/08/06 0.2.0a1:
+===================
 
 - don't overwrite handlers in case a handler already exists. (e.g. in paramiko)
   thanks to Aaron Lehmann
 
-2007/07/23 0.1.0a3
-------------------
+2007/07/23 0.1.0a3:
+===================
 
 - added information to setup.py, moved to cheeseshop
 
-2007/06/21 0.1.0a2
-------------------
+2007/06/21 0.1.0a2:
+===================
 
 - Log download failures
 
@@ -105,7 +106,7 @@ XXXX/XX/XX 0.3.8
 
 - Log connections on debug.
 
-2007/06/14 0.1.0a1
-------------------
+2007/06/14 0.1.0a1:
+===================
 
 - initial release
