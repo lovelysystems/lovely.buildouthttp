@@ -32,7 +32,7 @@ zc.buildout.download (e.g. hexagonit.recipe.download) because this
 extension also overwrites the url opener of zc.buildout.
 
 Github Private Downloads
-=========================
+========================
 
 Private downloads on http://github.com/ are protected by a user token
 (see: http://github.com/blog/170-token-authentication). This extension
