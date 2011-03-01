@@ -34,7 +34,7 @@ Some working examples.
     >>> f.close()
     >>> install(pwd_path=fp)
     >>> f = file(fp, 'w')
-    >>> f.write('The realm,https://example.com/,username,password\n')
+    >>> f.write('The realm,https://example.com/,username,password\n\n\n')
     >>> f.close()
     >>> install(pwd_path=fp)
     >>> f = file(fp, 'w')

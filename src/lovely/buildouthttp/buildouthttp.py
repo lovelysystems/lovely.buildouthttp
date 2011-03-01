@@ -138,7 +138,7 @@ def install(buildout=None, pwd_path=None):
         if file_path is None or not os.path.exists(file_path):
             return
         cred_file = file(file_path)
-        combined_creds += map(str.strip, cred_file.readlines())
+        combined_creds += [l.strip() for l in cred_file.readlines() if l.strip()]
         cred_file.close()
     # combine all the possible .httpauth files together
     combine_cred_file(pwd_path, combined_creds)
