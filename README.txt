@@ -27,6 +27,20 @@ Here is an example of the ``.httpauth`` file::
 
     Example com realm, http://www.example.com, username, secret
 
+For instances where you do not wish to provide a plaintext .httpauth file,
+a [lovely.buildouthttp] stanza can be added of the following form::
+
+    [lovely.buildouthttp]
+    realm = myrealm
+    uri = http://example.com
+    user = username
+    password = password # storing passwords in plaintext is not recommended
+    prompt = yes
+
+Any *or none* of the "realm", "uri", "user", and "password" keys can be used.
+The "prompt" key then determines whether buildout pauses to ask the user for
+any missing authentication information.
+
 Note that basic auth also works with any recipe using
 zc.buildout.download (e.g. hexagonit.recipe.download) because this
 extension also overwrites the url opener of zc.buildout.

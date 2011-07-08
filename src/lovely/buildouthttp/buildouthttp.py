@@ -54,17 +54,22 @@ def get_github_credentials():
         return login, token
 
 
-def prompt_for_credentials():
+def prompt_for_credentials(realm, uri, user, password):
 
-    """Prompts the user for a single set of basic http authentication
-    credentials"""
+    """Prompts the user for a http authentication credentials realm, uri,
+    user, password, if the related params passed to this method are None"""
 
     try:
-        realm = raw_input('Realm: ')
-        uri = raw_input('URI: ')
-        username = raw_input('Username: ')
-        password = getpass.getpass()
-        return realm, uri, username, password
+        if realm is None:
+            realm = raw_input('Realm: ')
+        if uri is None:
+            uri = raw_input('URI: ')
+        if user is None:
+            user = raw_input('Username: ')
+        if password is None:
+            password = getpass.getpass()
+
+        return realm, uri, user, password
     except KeyboardInterrupt:
         print
         return None, None, None, None
@@ -184,10 +189,26 @@ def install(buildout=None, pwd_path=None):
                 auth_handler.add_password(realm, uris, user, password)
 
         if not pwdsf and not github_creds:
-            realm, uri, user, password = prompt_for_credentials()
-            creds.append((realm, uri, user, password))
-            log.debug('Added credentials %r, %r' % (realm, uri))
-            auth_handler.add_password(realm, uri, user, password)
+            # We have no credentials, so fetch as much as possible from the
+            # [lovely.buildouthttp] stanza, the rest from a prompt.
+            realm, uri, user, password = None, None, None, None
+            if buildout is not None and \
+                                buildout.has_key('lovely.buildouthttp'):
+                lbs = buildout['lovely.buildouthttp']
+                realm = lbs.get('realm', None)
+                uri = lbs.get('uri', None)
+                user = lbs.get('user', None)
+                password = lbs.get('password', None)
+                prompt = lbs.get('prompt', 'no')
+
+                if prompt == 'yes':
+                    realm, uri, user, password = prompt_for_credentials(
+                                        realm, uri, user, password)
+
+            if not None in (realm, uri, user, password):
+                creds.append((realm, uri, user, password))
+                log.debug('Added credentials %r, %r' % (realm, uri))
+                auth_handler.add_password(realm, uri, user, password)
 
         if creds:
             new_handlers.append(auth_handler)
