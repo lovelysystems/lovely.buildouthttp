@@ -233,6 +233,7 @@ def install(buildout=None, pwd_path=None):
 
 def _load_protected_extensions(buildout):
     if not buildout: return
+    already_loaded = buildout['buildout'].get('extensions', '').split()
     specs = buildout['buildout'].get('protected-extensions', '').split()
     if specs:
         path = [buildout['buildout']['develop-eggs-directory']]
@@ -261,6 +262,8 @@ def _load_protected_extensions(buildout):
         easy_install.clear_index_cache()
 
         for ep in pkg_resources.iter_entry_points('zc.buildout.extension'):
+            if ep.dist.project_name in already_loaded:
+                continue
             ep.load()(buildout)
 
 
