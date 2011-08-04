@@ -27,6 +27,7 @@ from StringIO import StringIO
 from zc.buildout import download
 from zc.buildout import easy_install
 import urlparse
+import pkg_resources
 
 log = logging.getLogger('lovely.buildouthttp')
 
