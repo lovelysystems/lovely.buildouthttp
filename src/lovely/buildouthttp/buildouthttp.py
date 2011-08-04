@@ -31,7 +31,6 @@ import pkg_resources
 
 log = logging.getLogger('lovely.buildouthttp')
 
-
 def get_github_credentials():
 
     """returns the credentials for the local git installation by using
@@ -243,9 +242,7 @@ def _load_protected_extensions(buildout):
         else:
             dest = buildout['buildout']['eggs-directory']
             if not os.path.exists(dest):
-                logging.getLogger('lovely.buildouthttp').info(
-                    'Creating directory %r.' % dest
-                )
+                log.info('Creating directory %r.' % dest)
                 os.mkdir(dest)
 
         easy_install.install(
