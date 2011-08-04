@@ -245,15 +245,12 @@ def _load_protected_extensions(buildout):
                 log.info('Creating directory %r.' % dest)
                 os.mkdir(dest)
 
-        abtr = buildout['buildout']['accept-buildout-test-releases'] == 'true'
-
         easy_install.install(
             specs, dest, path=path,
             working_set=pkg_resources.working_set,
             links = buildout['buildout'].get('find-links', '').split(),
             index = buildout['buildout'].get('index'),
             newest=buildout.newest, allow_hosts=buildout._allow_hosts,
-            prefer_final=not abtr,
         )
 
         # Clear cache because extensions might now let us read pages we
