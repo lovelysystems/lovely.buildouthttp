@@ -45,6 +45,25 @@ Note that basic auth also works with any recipe using
 zc.buildout.download (e.g. hexagonit.recipe.download) because this
 extension also overwrites the url opener of zc.buildout.
 
+Protected Extensions
+====================
+
+Prior to running any extensions, buildout first downloads them all. What this
+means is that extensions eggs cannot be accessed via basic http authentication
+by default, because lovely.buildouthttp has not been loaded yet.
+
+Our solution is to add a new attribute to the [buildout] stanza, as follows::
+
+    [buildout]
+    index = http://example.com/protected
+    extensions = lovely.buildouthttp
+    protected-extensions = isotoma.buildout.autodevelop
+    ...
+
+What this will do is first load the extensions in "extensions", immediately
+after which the lovely.buildouthttp extension will load all of the
+protected-extensions using basic http authentication, if it is required.
+
 Github Private Downloads
 ========================
 
