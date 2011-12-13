@@ -64,6 +64,20 @@ What this will do is first load the extensions in "extensions", immediately
 after which the lovely.buildouthttp extension will load all of the
 protected-extensions using basic http authentication, if it is required.
 
+
+Acquiring Credentials From Your .pypirc
+=======================================
+
+If you use the same credentials to upload as you do to download packages, you
+can opt to get your credentials from your ~/.pypirc file::
+
+    [lovely.buildouthttp]
+    use-pypirc = protectedrepo
+
+Would use the credentials associated with the "protectedrepo" repository from
+your pypirc. N.B. Any credentials provided in your buildout configuration will
+override the settings taken from your pypirc.
+
 Github Private Downloads
 ========================
 

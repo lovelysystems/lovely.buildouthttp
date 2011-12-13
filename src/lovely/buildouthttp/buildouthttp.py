@@ -31,6 +31,18 @@ import pkg_resources
 
 log = logging.getLogger('lovely.buildouthttp')
 
+
+def get_pypirc_credentials(index_server):
+    """Acquire credentials from the user's pypirc file"""
+    from distutils.dist import Distribution
+    from distutils.config import PyPIRCCommand
+
+    p = PyPIRCCommand(Distribution())
+
+    p.repository = index_server
+    return p._read_pypirc()
+
+
 def get_github_credentials():
 
     """returns the credentials for the local git installation by using
@@ -201,6 +213,18 @@ def install(buildout=None, pwd_path=None):
                 user = lbs.get('user', None)
                 password = lbs.get('password', None)
                 prompt = lbs.get('prompt', 'no')
+
+                pypi_index = lbs.get('use-pypirc', None)
+                if pypi_index:
+                    pypi_credentials = get_pypirc_credentials(pypi_index)
+                    if not realm:
+                        realm = pypi_credentials.get('realm', None)
+                    if not uri:
+                        uri = pypi_credentials.get('repository', None)
+                    if not user:
+                        user = pypi_credentials.get('username', None)
+                    if not password:
+                        password = pypi_credentials.get('password', None)
 
                 if prompt == 'yes':
                     realm, uri, user, password = prompt_for_credentials(
