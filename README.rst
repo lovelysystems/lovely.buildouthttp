@@ -35,11 +35,11 @@ a [lovely.buildouthttp] stanza can be added of the following form::
     uri = http://example.com
     user = username
     password = password # storing passwords in plaintext is not recommended
-    prompt = yes
+    prompt = no
 
 Any *or none* of the "realm", "uri", "user", and "password" keys can be used.
 The "prompt" key then determines whether buildout pauses to ask the user for
-any missing authentication information.
+any missing authentication information (defaults to yes).
 
 Note that basic auth also works with any recipe using
 zc.buildout.download (e.g. hexagonit.recipe.download) because this

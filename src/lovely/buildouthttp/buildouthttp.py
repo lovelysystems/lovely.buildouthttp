@@ -212,7 +212,7 @@ def install(buildout=None, pwd_path=None):
                 uri = lbs.get('uri', None)
                 user = lbs.get('user', None)
                 password = lbs.get('password', None)
-                prompt = lbs.get('prompt', 'no')
+                prompt = lbs.get('prompt', 'yes')
 
                 pypi_index = lbs.get('use-pypirc', None)
                 if pypi_index:
