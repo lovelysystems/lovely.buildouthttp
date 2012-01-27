@@ -37,7 +37,8 @@ def get_pypirc_py24():
 
     config = {}
     c = ConfigParser.ConfigParser()
-    cf = os.path.join(os.environ["HOME"], ".pypirc")
+
+    cf = os.path.expanduser("~/.pypirc")
 
     if os.path.exists(cf):
         c.read(cf)
