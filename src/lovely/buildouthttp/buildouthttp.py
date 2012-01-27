@@ -32,10 +32,31 @@ import pkg_resources
 log = logging.getLogger('lovely.buildouthttp')
 
 
+def get_pypirc_py24():
+    import ConfigParser
+
+    config = {}
+    c = ConfigParser.ConfigParser()
+    cf = os.path.join(os.environ["HOME"], ".pypirc")
+
+    if os.path.exists(cf):
+        c.read(cf)
+        config['username'] = c.get('server-login', 'username')
+        config['password'] = c.get('server-login', 'password')
+
+        repo = c.get('server-login', 'repository')
+        if repo:
+            config['repository'] = repo
+
+    return config
+
 def get_pypirc_credentials(index_server):
     """Acquire credentials from the user's pypirc file"""
-    from distutils.dist import Distribution
-    from distutils.config import PyPIRCCommand
+    try:
+        from distutils.dist import Distribution
+        from distutils.config import PyPIRCCommand
+    except ImportError:
+        return get_pypirc_py24()
 
     p = PyPIRCCommand(Distribution())
 
@@ -182,7 +203,6 @@ def install(buildout=None, pwd_path=None):
     pwdsf.seek(0)
     if not pwdsf.len:
         pwdsf = None
-        log.warn('Could not load authentication information')
     try:
         auth_handler = CredHandler()
         github_creds = get_github_credentials()
