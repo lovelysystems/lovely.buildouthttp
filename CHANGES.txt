@@ -2,6 +2,13 @@
 Changes for lovely.buildouthttp
 ===============================
 
+2012/03/19 0.4.2:
+=================
+
+- fixed github authentication
+   According to Petros Amiridis (Github Staff), 'POST authentication is no
+   longer supported.
+
 2011/03/01 0.4.1:
 =================
 
