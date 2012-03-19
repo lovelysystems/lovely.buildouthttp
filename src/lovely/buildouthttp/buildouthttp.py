@@ -70,7 +70,8 @@ class GithubHandler(urllib2.BaseHandler):
             timeout = getattr(req, 'timeout', 60)
             if hasattr(req, 'timeout'):
                 timeout = req.timeout
-            req = urllib2.Request(req.get_full_url(), data)
+            full_url = '%s?%s' % (req.get_full_url(), data)
+            req = urllib2.Request(full_url)
             req.timeout = timeout
         return req
 
