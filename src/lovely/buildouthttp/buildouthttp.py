@@ -17,7 +17,6 @@ $Id: buildouthttp.py 116763 2010-09-23 12:16:01Z adamg $
 
 import urllib2
 import os
-import sys
 import csv
 import logging
 import subprocess
@@ -139,7 +138,8 @@ def install(buildout=None, pwd_path=None):
         if file_path is None or not os.path.exists(file_path):
             return
         cred_file = file(file_path)
-        combined_creds += [l.strip() for l in cred_file.readlines() if l.strip()]
+        combined_creds += [l.strip()
+                            for l in cred_file.readlines() if l.strip()]
         cred_file.close()
     # combine all the possible .httpauth files together
     combine_cred_file(pwd_path, combined_creds)
@@ -200,9 +200,9 @@ class URLOpener(download.URLOpener):
             if scheme == 'https' and netloc == 'github.com':
                 log.debug("Appending github credentials to url %r", url)
                 login, token = self.github_creds
-                data = urllib.urlencode(dict(login=login,
+                cred = urllib.urlencode(dict(login=login,
                                              token=token))
-                query += '&%s' % data
+                query = '&'.join((query, cred))
             url = urlparse.urlunparse((scheme, netloc, path, params,
                                        query, fragment))
         return download.URLOpener.retrieve(self, url, filename,
