@@ -42,14 +42,9 @@ def get_github_credentials():
         # failure to get config, so return silently
         return None
     token = p.stdout.readline().strip()
-    pipe = subprocess.Popen("git config github.user",
-                            shell=True,
-                            stdout=subprocess.PIPE).stdout
-    login = pipe.readline().strip()
-    pipe.close()
-    if login and token:
-        log.debug("Found github credentials for user %r", login)
-        return login, token
+    if token:
+        log.debug("Found github token %r", token)
+        return token
 
 
 class GithubHandler(urllib2.BaseHandler):
@@ -57,20 +52,26 @@ class GithubHandler(urllib2.BaseHandler):
     """This handler creates a post request with login and token, see
     http://github.com/blog/170-token-authentication for details"""
 
-    def __init__(self, login, token):
-        self._login = login
+    def __init__(self, token):
         self._token = token
 
     def https_request(self, req):
         if req.get_method() == 'GET' and req.get_host() == 'github.com':
             log.debug("Found private github url %r", req.get_full_url())
-            data = urllib.urlencode(dict(login=self._login,
-                                         token=self._token))
+            data = urllib.urlencode(dict(access_token=self._token))
             timeout = getattr(req, 'timeout', 60)
             if hasattr(req, 'timeout'):
                 timeout = req.timeout
-            full_url = '%s?%s' % (req.get_full_url(), data)
-            req = urllib2.Request(full_url)
+
+            # The GitHub v3 API requires a new URL.
+            scheme, netloc, path, params, query, fragment = \
+                                    urlparse.urlparse(req.get_full_url())
+            netloc = 'api.github.com'
+            path = 'repos/%s' % (path.lstrip('/'),)
+            query = '&'.join((query, data))
+            new_url = urlparse.urlunparse((scheme, netloc, path, params,
+                                           query, fragment))
+            req = urllib2.Request(new_url)
             req.timeout = timeout
         return req
 
@@ -155,7 +156,7 @@ def install(buildout=None, pwd_path=None):
         github_creds = get_github_credentials()
         new_handlers = []
         if github_creds:
-            new_handlers.append(GithubHandler(*github_creds))
+            new_handlers.append(GithubHandler(github_creds))
         if pwdsf:
             for l, row in enumerate(csv.reader(pwdsf)):
                 if len(row) != 4:
@@ -199,10 +200,11 @@ class URLOpener(download.URLOpener):
                 url)
             if scheme == 'https' and netloc == 'github.com':
                 log.debug("Appending github credentials to url %r", url)
-                login, token = self.github_creds
-                cred = urllib.urlencode(dict(login=login,
-                                             token=token))
+                token = self.github_creds
+                cred = urllib.urlencode(dict(access_token=token))
                 query = '&'.join((query, cred))
+                netloc = 'api.github.com'
+                path = 'repos/%s' % (path.lstrip('/'),)
             url = urlparse.urlunparse((scheme, netloc, path, params,
                                        query, fragment))
         return download.URLOpener.retrieve(self, url, filename,

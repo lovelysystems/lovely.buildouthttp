@@ -34,13 +34,29 @@ extension also overwrites the url opener of zc.buildout.
 Github Private Downloads
 ========================
 
-Private downloads on http://github.com/ are protected by a user token
-(see: http://github.com/blog/170-token-authentication). This extension
-allows to use such urls too. It uses the global git configuration for
-``github.user`` and ``github.token``. For setting up this config see
-http://github.com/blog/180-local-github-config.
+Private downloads on http://github.com/ require authorization to download.
+The previous token-based authentication system based on the v2 API (see
+http://github.com/blog/170-token-authentication) is no longer supported by
+GitHub as of June 1 2012; You must now request a v3 API token and use that
+instead.
+
+Requesting a new API token can be done in one line using ``curl`` (please
+substitute your own github username and password):
+
+    curl -s -X POST -d '{"scopes": ["repo"], "note": "my API token"}' \
+        https://${user}:${pass}@api.github.com/authorizations | grep token
+
+Now set the value of github.token to the hash returned from the command above:
+
+    git --config github.token ${token}
+
+Note that the v3 API does not require your github username to work, and can
+be removed from your configuration if you wish.
+
+For details on managing authorization GitHub's OAuth tokens, see the API
+documentation: http://developer.github.com/v3/oauth/#oauth-authorizations-api
 
 Credits
 =======
 
-Thanks to Tarek Ziade for bugfixes and extensions.
+Thanks to Tarek Ziade and Kevin Williams for bugfixes and extensions.
