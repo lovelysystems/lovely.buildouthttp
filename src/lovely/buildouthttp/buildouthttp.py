@@ -66,8 +66,6 @@ class GithubHandler(urllib2.BaseHandler):
             # The GitHub v3 API requires a new URL.
             scheme, netloc, path, params, query, fragment = \
                                     urlparse.urlparse(req.get_full_url())
-            netloc = 'api.github.com'
-            path = 'repos/%s' % (path.lstrip('/'),)
             query = '&'.join((query, data))
             new_url = urlparse.urlunparse((scheme, netloc, path, params,
                                            query, fragment))
@@ -203,8 +201,6 @@ class URLOpener(download.URLOpener):
                 token = self.github_creds
                 cred = urllib.urlencode(dict(access_token=token))
                 query = '&'.join((query, cred))
-                netloc = 'api.github.com'
-                path = 'repos/%s' % (path.lstrip('/'),)
             url = urlparse.urlunparse((scheme, netloc, path, params,
                                        query, fragment))
         return download.URLOpener.retrieve(self, url, filename,
