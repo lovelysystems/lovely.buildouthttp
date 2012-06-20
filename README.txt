@@ -48,7 +48,7 @@ substitute your own github username and password):
 
 Now set the value of github.token to the hash returned from the command above:
 
-    git config --global github.token ${token}
+    git config --global github.accesstoken ${token}
 
 Note that the v3 API does not require your github username to work, and can
 be removed from your configuration if you wish.
