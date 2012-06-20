@@ -2,6 +2,11 @@
 Changes for lovely.buildouthttp
 ===============================
 
+2012/06/20 0.4.4:
+=================
+
+- adapt github authentication to api v3 (see README.txt for more information)
+
 2012/03/20 0.4.3:
 =================
 
