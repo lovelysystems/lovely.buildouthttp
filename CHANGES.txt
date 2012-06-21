@@ -2,6 +2,11 @@
 Changes for lovely.buildouthttp
 ===============================
 
+2012/06/21 0.4.5:
+=================
+
+- detect all github.com domain names
+
 2012/06/20 0.4.4:
 =================
 

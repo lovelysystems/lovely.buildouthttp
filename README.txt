@@ -56,6 +56,15 @@ be removed from your configuration if you wish.
 For details on managing authorization GitHub's OAuth tokens, see the API
 documentation: http://developer.github.com/v3/oauth/#oauth-authorizations-api
 
+URL to download a tag or branch::
+
+    https://api.github.com/repos/<gituser>/<repos>/tarball/master
+
+URL to downlad a "download"::
+
+    https://github.com/downloads/<gituser>/<repos>/<name>
+
+
 Credits
 =======
 

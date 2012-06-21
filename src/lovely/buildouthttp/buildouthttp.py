@@ -56,7 +56,7 @@ class GithubHandler(urllib2.BaseHandler):
         self._token = token
 
     def https_request(self, req):
-        if req.get_method() == 'GET' and req.get_host() == 'github.com':
+        if req.get_method() == 'GET' and req.get_host().endswith('github.com'):
             log.debug("Found private github url %r", req.get_full_url())
             data = urllib.urlencode(dict(access_token=self._token))
             timeout = getattr(req, 'timeout', 60)
@@ -196,7 +196,7 @@ class URLOpener(download.URLOpener):
         if self.github_creds and not data:
             scheme, netloc, path, params, query, fragment = urlparse.urlparse(
                 url)
-            if scheme == 'https' and netloc == 'github.com':
+            if scheme == 'https' and netloc.endswith('github.com'):
                 log.debug("Appending github credentials to url %r", url)
                 token = self.github_creds
                 cred = urllib.urlencode(dict(access_token=token))
