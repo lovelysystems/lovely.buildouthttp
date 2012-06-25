@@ -5,7 +5,7 @@ Changes for lovely.buildouthttp
 unreleased:
 ===========
 
-- filter empty query parts to avoid '?$' in urls
+- filter empty query parts to avoid '?&' in urls
 
 2012/06/21 0.4.5:
 =================
