@@ -65,8 +65,8 @@ class GithubHandler(urllib2.BaseHandler):
             # "<userororg>/<repo>", for either API v3 or static downloads
             if self._repos:
                 for repo in self._repos:
-                    api_repo = "/repos/%s" % (repo,)
-                    dl_repo = "/downloads/%s" % (repo,)
+                    api_repo = "/repos/%s/" % (repo,)
+                    dl_repo = "/downloads/%s/" % (repo,)
                     if api_repo in url or dl_repo in url:
                         private = True
                         break
