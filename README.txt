@@ -80,4 +80,4 @@ line in the buildout config `github-repos`::
 Credits
 =======
 
-Thanks to Tarek Ziade and Kevin Williams for bugfixes and extensions.
+Thanks to Tarek Ziade, Kevin Williams and Wesley Mason for bugfixes and extensions.

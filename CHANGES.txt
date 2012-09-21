@@ -2,6 +2,11 @@
 Changes for lovely.buildouthttp
 ===============================
 
+2012/09/21 0.4.6:
+=================
+
+- allow optional whitelist for github repositories (see README)
+
 2012/06/21 0.4.5:
 =================
 
