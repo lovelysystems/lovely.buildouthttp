@@ -64,6 +64,18 @@ URL to downlad a "download"::
 
     https://github.com/downloads/<gituser>/<repos>/<name>
 
+As some eggs on PyPi also use public Github download URLs you may want to
+whitelist the repos that authentication is required for as Github will
+return a 401 error code even for public repositories if the wrong auth
+details are provided.
+To do this just list each repo in the format `<gituser>/<repos>` one per
+line in the buildout config `github-repos`::
+
+    [buildout]
+    extensions = lovely.buildouthttp
+    github-repos = lovely/lovely.buildouthttp
+                   bitly/asyncmongo
+
 
 Credits
 =======
