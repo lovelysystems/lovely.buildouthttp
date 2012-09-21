@@ -73,7 +73,7 @@ line in the buildout config `github-repos`::
 
     [buildout]
     extensions = lovely.buildouthttp
-    github-repos = lovely/lovely.buildouthttp
+    github-repos = lovelysystems/lovely.buildouthttp
                    bitly/asyncmongo
 
 
