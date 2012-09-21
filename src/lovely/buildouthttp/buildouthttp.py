@@ -52,25 +52,46 @@ class GithubHandler(urllib2.BaseHandler):
     """This handler creates a post request with login and token, see
     http://github.com/blog/170-token-authentication for details"""
 
-    def __init__(self, token):
+    def __init__(self, token, repos=None):
         self._token = token
+        self._repos = repos
 
     def https_request(self, req):
         if req.get_method() == 'GET' and req.get_host().endswith('github.com'):
-            log.debug("Found private github url %r", req.get_full_url())
-            data = urllib.urlencode(dict(access_token=self._token))
-            timeout = getattr(req, 'timeout', 60)
-            if hasattr(req, 'timeout'):
-                timeout = req.timeout
+            url = req.get_full_url()
+            private = False
 
-            # The GitHub v3 API requires a new URL.
-            scheme, netloc, path, params, query, fragment = \
-                                    urlparse.urlparse(req.get_full_url())
-            query = '&'.join((query, data))
-            new_url = urlparse.urlunparse((scheme, netloc, path, params,
-                                           query, fragment))
-            req = urllib2.Request(new_url)
-            req.timeout = timeout
+            # If provided check whitelist of Github repos in the format
+            # "<userororg>/<repo>", for either API v3 or static downloads
+            if self._repos:
+                for repo in self._repos:
+                    api_repo = "/repos/%s/" % (repo,)
+                    dl_repo = "/downloads/%s/" % (repo,)
+                    if api_repo in url or dl_repo in url:
+                        private = True
+                        break
+            else:
+                private = True
+
+            if private:
+                log.debug("Found private github url %r", (url,))
+                data = urllib.urlencode(dict(access_token=self._token))
+                timeout = getattr(req, 'timeout', 60)
+                if hasattr(req, 'timeout'):
+                    timeout = req.timeout
+
+                # The GitHub v3 API requires a new URL.
+                scheme, netloc, path, params, query, fragment = \
+                                        urlparse.urlparse(url)
+                query = '&'.join((query, data))
+                new_url = urlparse.urlunparse((scheme, netloc, path, params,
+                                               query, fragment))
+                req = urllib2.Request(new_url)
+                req.timeout = timeout
+            else:
+                log.debug("Github url %r blocked by buildout.github-repos" %
+                          (url,))
+                log.debug(self._repos)
         return req
 
 
@@ -124,10 +145,13 @@ def install(buildout=None, pwd_path=None):
     github_creds = None
     creds = []
     local_pwd_path = ''
+    github_repos = None
     if buildout is not None:
         local_pwd_path = os.path.join(
             buildout['buildout']['directory'],
             '.httpauth')
+        if 'github-repos' in buildout['buildout']:
+            github_repos = buildout['buildout']['github-repos'].split('\n')
     system_pwd_path = os.path.join(
         os.path.expanduser('~'),
         '.buildout',
@@ -154,7 +178,7 @@ def install(buildout=None, pwd_path=None):
         github_creds = get_github_credentials()
         new_handlers = []
         if github_creds:
-            new_handlers.append(GithubHandler(github_creds))
+            new_handlers.append(GithubHandler(github_creds, github_repos))
         if pwdsf:
             for l, row in enumerate(csv.reader(pwdsf)):
                 if len(row) != 4:
