@@ -88,6 +88,10 @@ class GithubHandler(urllib2.BaseHandler):
                                                query, fragment))
                 req = urllib2.Request(new_url)
                 req.timeout = timeout
+            else:
+                log.debug("Github url %r blocked by buildout.github-repos" %
+                          (url,))
+                log.debug(self._repos)
         return req
 
 
