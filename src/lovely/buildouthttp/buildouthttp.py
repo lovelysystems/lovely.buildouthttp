@@ -47,6 +47,25 @@ def get_github_credentials():
         return token
 
 
+def isPrivate(urlPath, repos):
+    # If provided check whitelist of Github repos in the format
+    # "<userororg>/<repo>", for either API v3 or static downloads
+    if repos is None:
+        # for backward compatibility all repos are private if there is no
+        # "github-repos" entry in the buildout section.
+        return True
+    # now check the whitelist
+    for repo in repos:
+        if not repo:
+            # ignore empty entries
+            continue
+        api_repo = "/repos/%s/" % (repo,)
+        dl_repo = "/downloads/%s/" % (repo,)
+        if api_repo in urlPath or dl_repo in urlPath:
+            return True
+    return False
+
+
 class GithubHandler(urllib2.BaseHandler):
 
     """This handler creates a post request with login and token, see
@@ -59,30 +78,14 @@ class GithubHandler(urllib2.BaseHandler):
     def https_request(self, req):
         if req.get_method() == 'GET' and req.get_host().endswith('github.com'):
             url = req.get_full_url()
-            private = False
-
-            # If provided check whitelist of Github repos in the format
-            # "<userororg>/<repo>", for either API v3 or static downloads
-            if self._repos:
-                for repo in self._repos:
-                    api_repo = "/repos/%s/" % (repo,)
-                    dl_repo = "/downloads/%s/" % (repo,)
-                    if api_repo in url or dl_repo in url:
-                        private = True
-                        break
-            else:
-                private = True
-
-            if private:
+            scheme, netloc, path, params, query, fragment = \
+                                        urlparse.urlparse(url)
+            if isPrivate(path, self._repos):
                 log.debug("Found private github url %r", (url,))
                 data = urllib.urlencode(dict(access_token=self._token))
                 timeout = getattr(req, 'timeout', 60)
                 if hasattr(req, 'timeout'):
                     timeout = req.timeout
-
-                # The GitHub v3 API requires a new URL.
-                scheme, netloc, path, params, query, fragment = \
-                                        urlparse.urlparse(url)
                 query = '&'.join((query, data))
                 new_url = urlparse.urlunparse((scheme, netloc, path, params,
                                                query, fragment))
@@ -192,7 +195,7 @@ def install(buildout=None, pwd_path=None):
         if creds:
             new_handlers.append(auth_handler)
         if creds or github_creds:
-            download.url_opener = URLOpener(creds, github_creds)
+            download.url_opener = URLOpener(creds, github_creds, github_repos)
         if new_handlers:
             if urllib2._opener is not None:
                 handlers = urllib2._opener.handlers[:]
@@ -208,9 +211,10 @@ def install(buildout=None, pwd_path=None):
 
 class URLOpener(download.URLOpener):
 
-    def __init__(self, creds, github_creds):
+    def __init__(self, creds, github_creds, github_repos):
         self.creds = {}
         self.github_creds = github_creds
+        self.github_repos = github_repos
         for realm, uris, user, password in creds:
             parts = urlparse.urlparse(uris)
             self.creds[(parts[1], realm)] = (user, password)
@@ -220,7 +224,10 @@ class URLOpener(download.URLOpener):
         if self.github_creds and not data:
             scheme, netloc, path, params, query, fragment = urlparse.urlparse(
                 url)
-            if scheme == 'https' and netloc.endswith('github.com'):
+            if (scheme == 'https'
+                and netloc.endswith('github.com')
+                and isPrivate(url, self.github_repos)
+               ):
                 log.debug("Appending github credentials to url %r", url)
                 token = self.github_creds
                 cred = urllib.urlencode(dict(access_token=token))

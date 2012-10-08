@@ -2,6 +2,11 @@
 Changes for lovely.buildouthttp
 ===============================
 
+unreleased
+==========
+
+- also check the whitelist for github downloads (not just find-links)
+
 2012/09/21 0.4.6:
 =================
 
