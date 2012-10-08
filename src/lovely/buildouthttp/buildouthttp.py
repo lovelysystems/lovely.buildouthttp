@@ -119,6 +119,28 @@ class GithubHandler(urllib2.BaseHandler):
     >>> res = handler.https_request(req)
     >>> res.get_full_url()
     'https://github.com/downloads/me/?access_token=--mytoken--'
+
+    >>> req = urllib2.Request('https://github.com/downloads/me/?a=1&b=2')
+    >>> res = handler.https_request(req)
+    >>> res.get_full_url()
+    'https://github.com/downloads/me/?a=1&b=2&access_token=--mytoken--'
+
+    If no timeout is set in the original request, the timeout is set to 60::
+
+    >>> hasattr(req, '')
+    False
+    >>> res.timeout
+    60
+
+
+    The timeout from the original request is preseverd in the result::
+
+    >>> req = urllib2.Request('https://github.com/downloads/me/?a=1&b=2')
+    >>> req.timeout = 42
+    >>> res = handler.https_request(req)
+    >>> res.timeout
+    42
+
     """
 
     def __init__(self, token, repos=None):
