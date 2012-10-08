@@ -127,7 +127,7 @@ class GithubHandler(urllib2.BaseHandler):
 
     If no timeout is set in the original request, the timeout is set to 60::
 
-    >>> hasattr(req, '')
+    >>> hasattr(req, 'timeout')
     False
     >>> res.timeout
     60
