@@ -48,6 +48,21 @@ def get_github_credentials():
 
 
 def isPrivate(urlPath, repos):
+    """Check if a URL is a private URL
+
+    >>> isPrivate('/downloads/me/', None)
+    True
+    >>> isPrivate('/downloads/me/', [])
+    False
+    >>> isPrivate('/downloads/me/', ['me'])
+    True
+    >>> isPrivate('/repos/me/', ['me'])
+    True
+    >>> isPrivate('/downloads/me/', ['unknown'])
+    False
+    >>> isPrivate('/somewhere/me/', ['me'])
+    False
+    """
     # If provided check whitelist of Github repos in the format
     # "<userororg>/<repo>", for either API v3 or static downloads
     if repos is None:
@@ -67,9 +82,44 @@ def isPrivate(urlPath, repos):
 
 
 class GithubHandler(urllib2.BaseHandler):
+    """This handler creates a post request with login and token
 
-    """This handler creates a post request with login and token, see
-    http://github.com/blog/170-token-authentication for details"""
+    see http://github.com/blog/170-token-authentication for details
+
+    With a none github url the resulting request is unchanged::
+
+    >>> req = urllib2.Request('http://example.com/downloads/me/')
+    >>> handler = GithubHandler('--mytoken--')
+    >>> res = handler.https_request(req)
+    >>> res.get_full_url()
+    'http://example.com/downloads/me/'
+    >>> res is req
+    True
+
+    With a github url we get the access token::
+
+    >>> req = urllib2.Request('https://github.com/downloads/me/')
+    >>> res = handler.https_request(req)
+    >>> res.get_full_url()
+    'https://github.com/downloads/me/?access_token=--mytoken--'
+
+    If we provide an empty whitelist we get all github requests without a
+    token::
+
+    >>> handler = GithubHandler('--mytoken--', [])
+    >>> req = urllib2.Request('https://github.com/downloads/me/')
+    >>> res = handler.https_request(req)
+    >>> res.get_full_url()
+    'https://github.com/downloads/me/'
+
+    If the repository is in the whitelist is receives a token::
+
+    >>> handler = GithubHandler('--mytoken--', ['me'])
+    >>> req = urllib2.Request('https://github.com/downloads/me/')
+    >>> res = handler.https_request(req)
+    >>> res.get_full_url()
+    'https://github.com/downloads/me/?access_token=--mytoken--'
+    """
 
     def __init__(self, token, repos=None):
         self._token = token
@@ -82,13 +132,11 @@ class GithubHandler(urllib2.BaseHandler):
                                         urlparse.urlparse(url)
             if isPrivate(path, self._repos):
                 log.debug("Found private github url %r", (url,))
-                data = urllib.urlencode(dict(access_token=self._token))
-                timeout = getattr(req, 'timeout', 60)
-                if hasattr(req, 'timeout'):
-                    timeout = req.timeout
-                query = '&'.join((query, data))
+                token = urllib.urlencode(dict(access_token=self._token))
+                query = '&'.join([p for p in (query, token) if p])
                 new_url = urlparse.urlunparse((scheme, netloc, path, params,
                                                query, fragment))
+                timeout = getattr(req, 'timeout', 60)
                 req = urllib2.Request(new_url)
                 req.timeout = timeout
             else:
