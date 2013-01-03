@@ -27,6 +27,11 @@ Here is an example of the ``.httpauth`` file::
 
     Example com realm, http://www.example.com, username, secret
 
+It is also possible to leave the secret away. Then you will be prompted for the
+secret whenever buildout is run::
+
+    Example com realm, http://www.example.com, username
+
 Note that basic auth also works with any recipe using
 zc.buildout.download (e.g. hexagonit.recipe.download) because this
 extension also overwrites the url opener of zc.buildout.
