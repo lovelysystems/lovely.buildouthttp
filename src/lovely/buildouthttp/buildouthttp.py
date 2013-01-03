@@ -254,11 +254,15 @@ def install(buildout=None, pwd_path=None):
             new_handlers.append(GithubHandler(github_creds, github_repos))
         if pwdsf:
             for l, row in enumerate(csv.reader(pwdsf)):
-                if len(row) != 4:
+                if len(row) == 3:
+                    realm, uris, user = (el.strip() for el in row)
+                    password = prompt_passwd(realm, user)
+                elif len(row) == 4:
+                    realm, uris, user, password = (el.strip() for el in row)
+                else:
                     raise RuntimeError(
                         "Authentication file cannot be parsed %s:%s" % (
                             pwd_path, l + 1))
-                realm, uris, user, password = (el.strip() for el in row)
                 creds.append((realm, uris, user, password))
                 log.debug('Added credentials %r, %r' % (realm, uris))
                 auth_handler.add_password(realm, uris, user, password)
@@ -277,6 +281,12 @@ def install(buildout=None, pwd_path=None):
     finally:
         if pwdsf:
             pwdsf.close()
+
+
+def prompt_passwd(realm, user):
+    from getpass import getpass
+    password = getpass('>>> Password for {} - {}: '.format(realm, user))
+    return password
 
 
 class URLOpener(download.URLOpener):
