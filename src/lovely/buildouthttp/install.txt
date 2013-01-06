@@ -19,8 +19,8 @@ If the file cannot be parsed an exception is raised.
 
     >>> fp = os.path.join(tmp,'pwd.txt')
     >>> import os
-    >>> f = file(fp, 'w')
-    >>> f.write('The realm,https://example.com/ something')
+    >>> f = open(fp, 'w')
+    >>> _ = f.write('The realm,https://example.com/ something')
     >>> f.close()
     >>> install(pwd_path=fp)
     Traceback (most recent call last):
@@ -29,16 +29,16 @@ If the file cannot be parsed an exception is raised.
 
 Some working examples.
 
-    >>> f = file(fp, 'w')
-    >>> f.write('The realm,https://example.com/,username,password')
+    >>> f = open(fp, 'w')
+    >>> _ = f.write('The realm,https://example.com/,username,password')
     >>> f.close()
     >>> install(pwd_path=fp)
-    >>> f = file(fp, 'w')
-    >>> f.write('The realm,https://example.com/,username,password\n\n\n')
+    >>> f = open(fp, 'w')
+    >>> _ = f.write('The realm,https://example.com/,username,password\n\n\n')
     >>> f.close()
     >>> install(pwd_path=fp)
-    >>> f = file(fp, 'w')
-    >>> f.write('')
+    >>> f = open(fp, 'w')
+    >>> _ = f.write('')
     >>> f.close()
     >>> install(pwd_path=fp)
 
@@ -49,21 +49,21 @@ Now let's try with the ``.httpauth`` file in the buildout directory.
     >>> buildout = {'buildout': {'directory': buildout_dir}}
     >>> install(buildout=buildout)
     >>> buildout_fp = os.path.join(buildout_dir, '.httpauth')
-    >>> f = file(buildout_fp, 'w')
-    >>> f.write('The realm,https://example.com/ not valid')
+    >>> f = open(buildout_fp, 'w')
+    >>> _ = f.write('The realm,https://example.com/ not valid')
     >>> f.close()
     >>> install(buildout=buildout)
     Traceback (most recent call last):
     ...
     RuntimeError: Authentication file cannot be parsed ...None:1
-    >>> f = file(buildout_fp, 'w')
-    >>> f.write('The realm,https://example.com/,username,password')
+    >>> f = open(buildout_fp, 'w')
+    >>> _ = f.write('The realm,https://example.com/,username,password')
     >>> f.close()
     >>> install(buildout=buildout)
 
 Then with the file passed in and the file from the buildout directory.
 
-    >>> f = file(fp, 'w')
-    >>> f.write('The realm,https://example.com/,username,password')
+    >>> f = open(fp, 'w')
+    >>> _ = f.write('The realm,https://example.com/,username,password')
     >>> f.close()
     >>> install(buildout=buildout, pwd_path=fp)

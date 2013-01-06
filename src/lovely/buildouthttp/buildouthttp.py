@@ -15,18 +15,30 @@
 $Id: buildouthttp.py 116763 2010-09-23 12:16:01Z adamg $
 """
 
-import urllib2
+import sys
+
+if sys.version_info[0] > 2:
+    from io import StringIO
+    import urllib.request as ulib
+    from urllib.error import HTTPError
+    from urllib.request import BaseHandler, HTTPBasicAuthHandler, Request
+    import urllib.parse as urlparse
+    from urllib.parse import urlencode
+else:
+    import urllib2 as ulib
+    from urllib2 import BaseHandler, HTTPBasicAuthHandler, Request, HTTPError
+    from urllib import urlencode
+    import urlparse
+    from StringIO import StringIO
 import os
 import csv
 import logging
 import subprocess
-import urllib
-from StringIO import StringIO
+
 from zc.buildout import download
-import urlparse
 
 log = logging.getLogger('lovely.buildouthttp')
-original_build_opener = urllib2.build_opener
+original_build_opener = ulib.build_opener
 
 
 def get_github_credentials():
@@ -82,14 +94,14 @@ def isPrivate(urlPath, repos):
     return False
 
 
-class GithubHandler(urllib2.BaseHandler):
+class GithubHandler(BaseHandler):
     """This handler creates a post request with login and token
 
     see http://github.com/blog/170-token-authentication for details
 
     With a none github url the resulting request is unchanged::
 
-    >>> req = urllib2.Request('http://example.com/downloads/me/')
+    >>> req = Request('http://example.com/downloads/me/')
     >>> handler = GithubHandler('--mytoken--')
     >>> res = handler.https_request(req)
     >>> res.get_full_url()
@@ -99,7 +111,7 @@ class GithubHandler(urllib2.BaseHandler):
 
     With a github url we get the access token::
 
-    >>> req = urllib2.Request('https://github.com/downloads/me/')
+    >>> req = Request('https://github.com/downloads/me/')
     >>> res = handler.https_request(req)
     >>> res.get_full_url()
     'https://github.com/downloads/me/?access_token=--mytoken--'
@@ -108,7 +120,7 @@ class GithubHandler(urllib2.BaseHandler):
     token::
 
     >>> handler = GithubHandler('--mytoken--', [])
-    >>> req = urllib2.Request('https://github.com/downloads/me/')
+    >>> req = Request('https://github.com/downloads/me/')
     >>> res = handler.https_request(req)
     >>> res.get_full_url()
     'https://github.com/downloads/me/'
@@ -116,12 +128,12 @@ class GithubHandler(urllib2.BaseHandler):
     If the repository is in the whitelist is receives a token::
 
     >>> handler = GithubHandler('--mytoken--', ['me'])
-    >>> req = urllib2.Request('https://github.com/downloads/me/')
+    >>> req = Request('https://github.com/downloads/me/')
     >>> res = handler.https_request(req)
     >>> res.get_full_url()
     'https://github.com/downloads/me/?access_token=--mytoken--'
 
-    >>> req = urllib2.Request('https://github.com/downloads/me/?a=1&b=2')
+    >>> req = Request('https://github.com/downloads/me/?a=1&b=2')
     >>> res = handler.https_request(req)
     >>> res.get_full_url()
     'https://github.com/downloads/me/?a=1&b=2&access_token=--mytoken--'
@@ -136,7 +148,7 @@ class GithubHandler(urllib2.BaseHandler):
 
     The timeout from the original request is preseverd in the result::
 
-    >>> req = urllib2.Request('https://github.com/downloads/me/?a=1&b=2')
+    >>> req = Request('https://github.com/downloads/me/?a=1&b=2')
     >>> req.timeout = 42
     >>> res = handler.https_request(req)
     >>> res.timeout
@@ -155,17 +167,17 @@ class GithubHandler(urllib2.BaseHandler):
                                         urlparse.urlparse(url)
             if isPrivate(path, self._repos):
                 log.debug("Found private github url %r", (url,))
-                token = urllib.urlencode(dict(access_token=self._token))
+                token = urlencode(dict(access_token=self._token))
                 query = '&'.join([p for p in (query, token) if p])
                 new_url = urlparse.urlunparse((scheme, netloc, path, params,
                                                query, fragment))
                 timeout = getattr(req, 'timeout', 60)
                 old_req = req
-                req = urllib2.Request(new_url)
+                req = Request(new_url)
                 req.timeout = timeout
                 # Re-add user-agent, as the GitHub API requires this for auth
                 req.add_header('user-agent', old_req.get_header('user-agent',
-                                                            'Python-urllib2'))
+                                                                'Python-urllib2'))
             else:
                 log.debug("Github url %r blocked by buildout.github-repos" %
                           (url,))
@@ -173,7 +185,7 @@ class GithubHandler(urllib2.BaseHandler):
         return req
 
 
-class CredHandler(urllib2.HTTPBasicAuthHandler):
+class CredHandler(HTTPBasicAuthHandler):
 
     """This handler adds basic auth credentials to the request upon a 401
 
@@ -181,9 +193,12 @@ class CredHandler(urllib2.HTTPBasicAuthHandler):
     >>> auth_handler.add_password('myrealm', 'http://example.com',
     ...                           'user', 'password')
 
-    >>> from StringIO import StringIO
+    >>> try:
+    ...     from StringIO import StringIO
+    ... except ImportError:
+    ...     from io import StringIO
     >>> fp = StringIO('The error body')
-    >>> req = urllib2.Request('http://example.com')
+    >>> req = Request('http://example.com')
     >>> auth_handler.http_error_401(req, fp, 401, 'msg', {})
     """
 
@@ -198,12 +213,12 @@ class CredHandler(urllib2.HTTPBasicAuthHandler):
 
         log.debug('getting url: %r' % req.get_full_url())
         try:
-            res = urllib2.HTTPBasicAuthHandler.http_error_401(
+            res = HTTPBasicAuthHandler.http_error_401(
                 self, req, fp, code, msg, headers)
-        except urllib2.HTTPError, err:
+        except HTTPError as err:
             log.error('failed to get url: %r %r', req.get_full_url(), err.code)
             raise
-        except Exception, err:
+        except Exception as err:
             log.error('failed to get url: %r %s', req.get_full_url(), str(err))
             raise
         else:
@@ -218,8 +233,8 @@ class CredHandler(urllib2.HTTPBasicAuthHandler):
 
 
 def unload(buildout=None):
-    urllib2.build_opener = original_build_opener
-    urllib2.install_opener(urllib2.build_opener())
+    ulib.build_opener = original_build_opener
+    ulib.install_opener(ulib.build_opener())
 
 
 def install(buildout=None, pwd_path=None):
@@ -243,7 +258,7 @@ def install(buildout=None, pwd_path=None):
     def combine_cred_file(file_path, combined_creds):
         if file_path is None or not os.path.exists(file_path):
             return
-        cred_file = file(file_path)
+        cred_file = open(file_path)
         combined_creds += [l.strip()
                             for l in cred_file.readlines() if l.strip()]
         cred_file.close()
@@ -252,10 +267,12 @@ def install(buildout=None, pwd_path=None):
     combine_cred_file(local_pwd_path, combined_creds)
     combine_cred_file(system_pwd_path, combined_creds)
     pwdsf.write("\n".join(combined_creds))
-    pwdsf.seek(0)
-    if not pwdsf.len:
+    pwdsf.seek(0, os.SEEK_END)
+    if not pwdsf.tell():
         pwdsf = None
         log.warn('Could not load authentication information')
+    else:
+        pwdsf.seek(0)
     try:
         auth_handler = CredHandler()
         github_creds = get_github_credentials()
@@ -281,13 +298,13 @@ def install(buildout=None, pwd_path=None):
         if creds or github_creds:
             download.url_opener = URLOpener(creds, github_creds, github_repos)
         if new_handlers:
-            if urllib2._opener is not None:
-                handlers = urllib2._opener.handlers[:]
+            if ulib._opener is not None:
+                handlers = ulib._opener.handlers[:]
                 handlers[:0] = new_handlers
             else:
                 handlers = new_handlers
-            urllib2.build_opener = lambda *a: original_build_opener(*handlers)
-            urllib2.install_opener(urllib2.build_opener())
+            ulib.build_opener = lambda *a: original_build_opener(*handlers)
+            ulib.install_opener(ulib.build_opener())
     finally:
         if pwdsf:
             pwdsf.close()
@@ -320,7 +337,7 @@ class URLOpener(download.URLOpener):
                ):
                 log.debug("Appending github credentials to url %r", url)
                 token = self.github_creds
-                cred = urllib.urlencode(dict(access_token=token))
+                cred = urlencode(dict(access_token=token))
                 query = '&'.join((query, cred))
             url = urlparse.urlunparse((scheme, netloc, path, params,
                                        query, fragment))
