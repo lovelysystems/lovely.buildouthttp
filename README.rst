@@ -82,6 +82,28 @@ line in the buildout config `github-repos`::
                    bitly/asyncmongo
 
 
+Development Setup
+==============================
+
+Run bootstrap::
+
+    /path/to/python/python2.7 bootstrap.py
+
+And run buildout::
+
+    ./bin/buildout -N
+
+Testing
+_______
+
+To run the tests use::
+
+    ./bin/test
+
+To run the tests with multiple python interpreters use tox::
+
+    ./bin/tox
+
 Credits
 =======
 
