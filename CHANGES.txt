@@ -5,6 +5,8 @@ Changes for lovely.buildouthttp
 unreleased
 ==========
 
+- prompt for password if it's not in the .httpauth file
+
 2012/10/08 0.4.7:
 =================
 
