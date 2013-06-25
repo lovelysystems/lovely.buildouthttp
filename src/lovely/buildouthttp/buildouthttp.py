@@ -159,8 +159,12 @@ class GithubHandler(urllib2.BaseHandler):
                 new_url = urlparse.urlunparse((scheme, netloc, path, params,
                                                query, fragment))
                 timeout = getattr(req, 'timeout', 60)
+                old_req = req
                 req = urllib2.Request(new_url)
                 req.timeout = timeout
+                # Re-add user-agent, as the GitHub API requires this for auth
+                req.add_header('user-agent', old_req.get_header('user-agent',
+                                                            'Python-urllib2'))
             else:
                 log.debug("Github url %r blocked by buildout.github-repos" %
                           (url,))
