@@ -5,6 +5,9 @@ Changes for lovely.buildouthttp
 unreleased
 ==========
 
+2013/06/25 0.4.8:
+=================
+
  - the User-Agent header isn't dropped anymore because the Github API requires
    it.
 
