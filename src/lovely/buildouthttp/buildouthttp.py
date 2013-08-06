@@ -26,6 +26,7 @@ from zc.buildout import download
 import urlparse
 
 log = logging.getLogger('lovely.buildouthttp')
+original_build_opener = urllib2.build_opener
 
 
 def get_github_credentials():
@@ -216,6 +217,11 @@ class CredHandler(urllib2.HTTPBasicAuthHandler):
             return res
 
 
+def unload(buildout=None):
+    urllib2.build_opener = original_build_opener
+    urllib2.install_opener(urllib2.build_opener())
+
+
 def install(buildout=None, pwd_path=None):
     pwdsf = StringIO()
     combined_creds = []
@@ -280,8 +286,8 @@ def install(buildout=None, pwd_path=None):
                 handlers[:0] = new_handlers
             else:
                 handlers = new_handlers
-            opener = urllib2.build_opener(*handlers)
-            urllib2.install_opener(opener)
+            urllib2.build_opener = lambda *a: original_build_opener(*handlers)
+            urllib2.install_opener(urllib2.build_opener())
     finally:
         if pwdsf:
             pwdsf.close()

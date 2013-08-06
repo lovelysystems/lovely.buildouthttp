@@ -5,6 +5,8 @@ Changes for lovely.buildouthttp
 unreleased
 ==========
 
+ - fix compatibility issues for setuptools 0.7 and later.
+
 2013/06/25 0.4.8:
 =================
 
