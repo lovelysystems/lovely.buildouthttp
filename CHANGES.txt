@@ -5,6 +5,8 @@ Changes for lovely.buildouthttp
 unreleased
 ==========
 
+ - added python3 compatibility
+
 2013/08/06 0.5.0:
 =================
 

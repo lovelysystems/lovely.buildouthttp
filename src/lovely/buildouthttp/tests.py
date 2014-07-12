@@ -1,6 +1,6 @@
 import doctest
 import unittest
-from zope.testing.doctest import DocFileSuite, DocTestSuite
+from doctest import DocFileSuite, DocTestSuite
 import tempfile
 import shutil
 
