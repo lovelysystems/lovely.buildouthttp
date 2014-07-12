@@ -18,7 +18,7 @@ from six.moves.urllib import request as urllib_request
 from six.moves.urllib import error as urllib_error
 from six.moves.urllib import parse as urllib_parse
 import sys
-if sys.version_info.major == 2:
+if sys.version_info[0] == 2:
     import urllib2
     url_opener = urllib2._opener
 else:
