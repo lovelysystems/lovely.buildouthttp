@@ -6,3 +6,5 @@
 /src/lovely.buildouthttp.egg-info/
 *.pyc
 *.pyo
+/.idea/
+/.tox/

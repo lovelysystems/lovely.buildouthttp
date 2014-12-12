@@ -29,7 +29,7 @@ setup(
     include_package_data = True,
     package_dir = {'':'src'},
     namespace_packages = ['lovely'],
-    install_requires = ['setuptools', 'zc.buildout'],
+    install_requires = ['setuptools', 'zc.buildout', 'six'],
     extras_require = dict(
         test = ['zope.testing']
         ),
