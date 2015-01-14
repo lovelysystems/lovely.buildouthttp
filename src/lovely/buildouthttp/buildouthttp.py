@@ -14,6 +14,7 @@
 """
 $Id: buildouthttp.py 116763 2010-09-23 12:16:01Z adamg $
 """
+import pkg_resources
 from six.moves.urllib import request as urllib_request
 from six.moves.urllib import error as urllib_error
 from six.moves.urllib import parse as urllib_parse
@@ -35,6 +36,21 @@ from zc.buildout import download
 
 log = logging.getLogger('lovely.buildouthttp')
 original_build_opener = urllib_request.build_opener
+
+
+def get_zc_buildout_version():
+    """Determine the version of zc.buildout
+
+    >>> len(get_zc_buildout_version()) > 0
+    True
+
+    >>> import re
+    >>> re.match("\d+\.\d+\.\d+", get_zc_buildout_version()) is not None
+    True
+    """
+    return pkg_resources.working_set.find(
+        pkg_resources.Requirement.parse('zc.buildout')
+    ).version
 
 
 def get_github_credentials():
@@ -129,7 +145,8 @@ class GithubHandler(urllib_request.BaseHandler):
     >>> res.get_full_url()
     'https://github.com/downloads/me/?access_token=--mytoken--'
 
-    >>> req = urllib_request.Request('https://github.com/downloads/me/?a=1&b=2')
+    >>> req = urllib_request.Request(
+    ...           'https://github.com/downloads/me/?a=1&b=2')
     >>> res = handler.https_request(req)
     >>> res.get_full_url()
     'https://github.com/downloads/me/?a=1&b=2&access_token=--mytoken--'
@@ -288,7 +305,10 @@ def install(buildout=None, pwd_path=None):
         if creds:
             new_handlers.append(auth_handler)
         if creds or github_creds:
-            download.url_opener = URLOpener(creds, github_creds, github_repos)
+            if get_zc_buildout_version() >= '2.0.0':
+                download.urllib._urlopener = URLOpener(creds, github_creds, github_repos)
+            else:
+                download.url_opener = URLOpener(creds, github_creds, github_repos)
         if new_handlers:
             if url_opener is not None:
                 handlers = url_opener.handlers[:]

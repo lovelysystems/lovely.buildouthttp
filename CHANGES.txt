@@ -5,6 +5,9 @@ Changes for lovely.buildouthttp
 unreleased
 ==========
 
+ - added support for zc.buildout versions >= 2.0.0 (monkey patch of urlopener
+   has changed)
+
 2014/12/12 0.6.0:
 =================
 
