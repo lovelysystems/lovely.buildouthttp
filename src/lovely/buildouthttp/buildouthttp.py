@@ -45,8 +45,8 @@ def get_zc_buildout_version():
     True
 
     >>> import re
-    >>> re.match("\d+\.\d+\.\d+", get_zc_buildout_version())
-    <_sre.SRE_Match object at 0x...>
+    >>> re.match("\d+\.\d+\.\d+", get_zc_buildout_version()) is not None
+    True
     """
     return pkg_resources.working_set.find(
         pkg_resources.Requirement.parse('zc.buildout')
@@ -145,7 +145,8 @@ class GithubHandler(urllib_request.BaseHandler):
     >>> res.get_full_url()
     'https://github.com/downloads/me/?access_token=--mytoken--'
 
-    >>> req = urllib_request.Request('https://github.com/downloads/me/?a=1&b=2')
+    >>> req = urllib_request.Request(
+    ...           'https://github.com/downloads/me/?a=1&b=2')
     >>> res = handler.https_request(req)
     >>> res.get_full_url()
     'https://github.com/downloads/me/?a=1&b=2&access_token=--mytoken--'
